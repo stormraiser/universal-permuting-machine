@@ -1,0 +1,96 @@
+tag U = (1, 1, 1), D = (1, 0.8, 0), R = (0, 0, 0.8);
+tag L = (0, 0.5, 0), F = (0.8, 0, 0), B = (0.8, 0.3, 0);
+tag body = (0.1, 0.1, 0.1);
+
+symmetry x {
+    cycle (U, R, D, L);
+    axisangle (1, 0, 0, -90);
+}
+
+symmetry y {
+    cycle (F, U, B, D);
+    axisangle (0, 1, 0, -90);
+}
+
+geometry center {
+    model "block_4.stl";
+    translate(0, 0, 8)
+        model "sticker_4.stl";
+}
+
+geometry edge {
+    model "block_4.stl";
+    translate(0, 0, 8)
+        model "sticker_4.stl";
+    translate(0, 8, 0)
+        rotate(-90, 0, 0)
+            model "sticker_4.stl";
+}
+
+geometry corner {
+    model "block_4.stl";
+    translate(0, 0, 8)
+        model "sticker_4.stl";
+    translate(0, 8, 0)
+        rotate(-90, 0, 0)
+            model "sticker_4.stl";
+    translate(8, 0, 0)
+        rotate(0, 90, 0)
+            model "sticker_4.stl";
+}
+
+auto (x, y) {
+    translate(8, 8, 24)
+        block UR2F2 = center(body, U);
+    translate(8, 24, 24)
+        block URF2 = edge(body, U, R);
+    translate(24, 24, 24)
+        block URF = corner(body, U, R, F);
+    block alias (URF, RFU);
+    position UR2F2, URF2, UR2F, URF;
+    
+    operation U {
+        axisangle(0, 0, 1, -90) {
+            shift (UR2F2, UF2L2), (URF2, UFL2), (RF2U, FL2U), (UR2F, UF2L), (FUR2, LUF2);
+            shift (URF, UFL), (RFU, FLU), (FUR, LUF);
+        }
+    }
+    operation U' inverse U;
+    
+    operation U2 {
+        axisangle(0, 0, 1, -90)
+            shift (RF2U2, FL2U2), (RFU2, FLU2), (FU2R, LU2F), (FU2R2, LU2F2);
+    }
+    operation U2' inverse U2;
+    
+    translate(0, 0, 24)
+        binding U {
+            invoke U;
+            click "selector_4_1_cw.stl";
+        }
+    
+    translate(0, 0, 24)
+        binding U' {
+            invoke U';
+            click "selector_4_1_ccw.stl";
+        }
+    
+    translate(0, 0, 8)
+        binding U2 {
+            invoke U2;
+            click "selector_4_2_cw.stl";
+        }
+    
+    translate(0, 0, 8)
+        binding U2' {
+            invoke U2';
+            click "selector_4_2_ccw.stl";
+        }
+}
+
+operation dummy;
+
+binding dummy {
+    invoke dummy;
+    click "selector_4_0.stl";
+}

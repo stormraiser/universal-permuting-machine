@@ -1,0 +1,86 @@
+tag U = (1, 1, 1), D = (1, 0.8, 0), R = (0, 0, 0.8);
+tag L = (0, 0.5, 0), F = (0.8, 0, 0), B = (0.8, 0.3, 0);
+tag body = (0.1, 0.1, 0.1);
+
+symmetry x {
+    cycle (U, R, D, L);
+    axisangle (1, 0, 0, -90);
+}
+
+symmetry y {
+    cycle (F, U, B, D);
+    axisangle (0, 1, 0, -90);
+}
+
+geometry center {
+    model "block_3.stl";
+    translate(0, 0, 9.5)
+        model "sticker_3.stl";
+}
+
+geometry edge {
+    model "block_3.stl";
+    translate(0, 0, 9.5)
+        model "sticker_3.stl";
+    translate(0, 9.5, 0)
+        rotate(-90, 0, 0)
+            model "sticker_3.stl";
+}
+
+geometry corner {
+    model "block_3.stl";
+    translate(0, 0, 9.5)
+        model "sticker_3.stl";
+    translate(0, 9.5, 0)
+        rotate(-90, 0, 0)
+            model "sticker_3.stl";
+    translate(9.5, 0, 0)
+        rotate(0, 90, 0)
+            model "sticker_3.stl";
+}
+
+auto (x, y) {
+    translate(0, 0, 19)
+        block U/R = center(body, U);
+    translate(0, 19, 19)
+        block UR = edge(body, U, R);
+    translate(19, 19, 19)
+        block URF = corner(body, U, R, F);
+    block alias (U/R, U/F), (UR, RU), (URF, RFU);
+    position U/R, UR, URF;
+    
+    operation U {
+        axisangle(0, 0, 1, -90)
+            shift (U/R, U/F), (UR, UF), (RU, FU), (URF, UFL), (RFU, FLU), (FUR, LUF);
+    }
+    operation U' inverse U;
+    
+    operation Um {
+        axisangle(0, 0, 1, -90)
+            shift (R/U, F/U), (R/B, F/R), (R/D, F/D), (R/F, F/L), (RF, FL), (FR, LF);
+    }
+    
+    translate(0, 0, 19)
+        binding U {
+            invoke U;
+            click "selector_3_1_cw.stl";
+        }
+    
+    translate(0, 0, 19)
+        binding U' {
+            invoke U';
+            click "selector_3_1_ccw.stl";
+        }
+    
+    binding Um {
+        invoke Um;
+        click "selector_3_2_cw.stl";
+    }
+}
+
+operation dummy;
+
+binding dummy {
+    invoke dummy;
+    click "selector_3_0.stl";
+}

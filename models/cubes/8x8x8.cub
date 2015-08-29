@@ -1,0 +1,163 @@
+tag U = (1, 1, 1), D = (1, 0.8, 0), R = (0, 0, 0.8);
+tag L = (0, 0.5, 0), F = (0.8, 0, 0), B = (0.8, 0.3, 0);
+tag body = (0.1, 0.1, 0.1);
+
+symmetry x {
+    cycle (U, R, D, L);
+    axisangle (1, 0, 0, -90);
+}
+
+symmetry y {
+    cycle (F, U, B, D);
+    axisangle (0, 1, 0, -90);
+}
+
+geometry center {
+    model "block_8.stl";
+    translate(0, 0, 5)
+        model "sticker_8.stl";
+}
+
+geometry edge {
+    model "block_8.stl";
+    translate(0, 0, 5)
+        model "sticker_8.stl";
+    translate(0, 5, 0)
+        rotate(-90, 0, 0)
+            model "sticker_8.stl";
+}
+
+geometry corner {
+    model "block_8.stl";
+    translate(0, 0, 5)
+        model "sticker_8.stl";
+    translate(0, 5, 0)
+        rotate(-90, 0, 0)
+            model "sticker_8.stl";
+    translate(5, 0, 0)
+        rotate(0, 90, 0)
+            model "sticker_8.stl";
+}
+
+auto (x, y) {
+    translate(5, 5, 35)
+        block UR4F4 = center(body, U);
+    translate(5, 15, 35)
+        block UR3F4 = center(body, U);
+    translate(5, 25, 35)
+        block UR2F4 = center(body, U);
+    translate(5, 35, 35)
+        block URF4 = edge(body, U, R);
+    translate(15, 5, 35)
+        block UR4F3 = center(body, U);
+    translate(15, 15, 35)
+        block UR3F3 = center(body, U);
+    translate(15, 25, 35)
+        block UR2F3 = center(body, U);
+    translate(15, 35, 35)
+        block URF3 = edge(body, U, R);
+    translate(25, 5, 35)
+        block UR4F2 = center(body, U);
+    translate(25, 15, 35)
+        block UR3F2 = center(body, U);
+    translate(25, 25, 35)
+        block UR2F2 = center(body, U);
+    translate(25, 35, 35)
+        block URF2 = edge(body, U, R);
+    translate(35, 35, 35)
+        block URF = corner(body, U, R, F);
+    block alias (URF, RFU);
+    position UR4F4, UR3F4, UR2F4, URF4, UR4F3, UR3F3, UR2F3, URF3;
+    position UR4F2, UR3F2, UR2F2, URF2, UR4F, UR3F, UR2F, URF;
+    
+    operation U {
+        axisangle(0, 0, 1, -90) {
+            shift (UR4F4, UF4L4), (UR3F4, UF3L4), (UR2F4, UF2L4), (URF4, UFL4);
+            shift (UR4F3, UF4L3), (UR3F3, UF3L3), (UR2F3, UF2L3), (URF3, UFL3);
+            shift (UR4F2, UF4L2), (UR3F2, UF3L2), (UR2F2, UF2L2), (URF2, UFL2);
+            shift (UR4F, UF4L), (UR3F, UF3L), (UR2F, UF2L), (URF, UFL);
+            shift (RF4U, FL4U), (RF3U, FL3U), (RF2U, FL2U), (RFU, FLU);
+            shift (FUR, LUF), (FUR2, LUF2), (FUR3, LUF3), (FUR4, LUF4);
+        }
+    }
+    operation U' inverse U;
+    
+    operation U2 {
+        axisangle(0, 0, 1, -90) {
+            shift (RF4U2, FL4U2), (RF3U2, FL3U2), (RF2U2, FL2U2), (RFU2, FLU2);
+            shift (FU2R, LU2F), (FU2R2, LU2F2), (FU2R3, LU2F3), (FU2R4, LU2F4);
+        }
+    }
+    operation U2' inverse U2;
+    
+    operation U3 {
+        axisangle(0, 0, 1, -90) {
+            shift (RF4U3, FL4U3), (RF3U3, FL3U3), (RF2U3, FL2U3), (RFU3, FLU3);
+            shift (FU3R, LU3F), (FU3R2, LU3F2), (FU3R3, LU3F3), (FU3R4, LU3F4);
+        }
+    }
+    operation U3' inverse U3;
+    
+    operation U4 {
+        axisangle(0, 0, 1, -90) {
+            shift (RF4U4, FL4U4), (RF3U4, FL3U4), (RF2U4, FL2U4), (RFU4, FLU4);
+            shift (FU4R, LU4F), (FU4R2, LU4F2), (FU4R3, LU4F3), (FU4R4, LU4F4);
+        }
+    }
+    operation U4' inverse U4;
+    
+    translate(0, 0, 35)
+        binding U {
+            invoke U;
+            click "selector_8_1_cw.stl";
+        }
+    
+    translate(0, 0, 35)
+        binding U' {
+            invoke U';
+            click "selector_8_1_ccw.stl";
+        }
+    
+    translate(0, 0, 25)
+        binding U2 {
+            invoke U2;
+            click "selector_8_2_cw.stl";
+        }
+    
+    translate(0, 0, 25)
+        binding U2' {
+            invoke U2';
+            click "selector_8_2_ccw.stl";
+        }
+    
+    translate(0, 0, 15)
+        binding U3 {
+            invoke U3;
+            click "selector_8_2_cw.stl";
+        }
+    
+    translate(0, 0, 15)
+        binding U3' {
+            invoke U3';
+            click "selector_8_2_ccw.stl";
+        }
+    
+    translate(0, 0, 5)
+        binding U4 {
+            invoke U4;
+            click "selector_8_2_cw.stl";
+        }
+    
+    translate(0, 0, 5)
+        binding U4' {
+            invoke U4';
+            click "selector_8_2_ccw.stl";
+        }
+}
+
+operation dummy;
+
+binding dummy {
+    invoke dummy;
+    click "selector_8_0.stl";
+}

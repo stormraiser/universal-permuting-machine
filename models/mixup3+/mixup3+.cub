@@ -1,0 +1,91 @@
+tag U = (1, 1, 1), D = (1, 0.8, 0), R = (0, 0, 0.8);
+tag L = (0, 0.5, 0), F = (0.8, 0, 0), B = (0.8, 0.3, 0);
+tag body = (0.1, 0.1, 0.1);
+
+symmetry x {
+    cycle (U, R, D, L);
+    axisangle (1, 0, 0, -90);
+}
+
+symmetry y {
+    cycle (F, U, B, D);
+    axisangle (0, 1, 0, -90);
+}
+
+geometry center {
+    model "center_block.stl";
+    translate (0, 0, 37.5)
+        model "medium_sticker.stl";
+}
+
+geometry edge {
+    model "edge_block.stl";
+    translate (0, 30.410533, 37.5)
+        model "small_sticker.stl";
+    translate (0, 37.5, 30.410533)
+        rotate (-90, 0, 0)
+            model "small_sticker.stl";
+}
+
+geometry intermediate {
+    model "intermediate_block.stl";
+    translate (0, 16.231602, 37.5)
+        model "small_sticker.stl";
+}
+
+geometry corner {
+    model "corner_block.stl";
+    translate (23.321068, 23.321068, 37.5)
+        model "large_sticker.stl";
+    translate (23.321068, 37.5, 23.321068)
+        rotate (-90, 0, 0)
+            model "large_sticker.stl";
+    translate (37.5, 23.321068, 23.321068)
+        rotate (0, 90, 0)
+            model "large_sticker.stl";
+}
+
+auto (x, y) {
+    block U/R = center (body, U), UR = edge (body, U, R);
+    block UR2 = intermediate (body, U), URF = corner (body, U, R, F);
+    block alias (U/R, U/F, U/L, U/B), (UR, RU), (URF, RFU, FUR);
+    position U/R, UR, UR+1, UR2, UR2+1, URF;
+    
+    operation U {
+        axisangle (0, 0, 1, -90) {
+            shift (U/R, U/F), (UR2, UF2), (UR2+1, UF2+1), (RU2, FU2), (RU2+1, FU2+1);
+            shift (UR, UF), (UR+1, UF+1), (RU, FU), (RU+1, FU+1);
+            shift (URF, UFL), (RFU, FLU), (FUR, LUF);
+        }
+    }
+    operation U' inverse U;
+    
+    operation Um {
+        axisangle (0, 0, 1, -45) {
+            shift (R/F, RF, F/L), (R/U, RF+1, F/U), (R/B, FR, F/R), (R/D, FR+1, F/D);
+            shift (RF2, FR2+1, FL2), (RF2+1, FR2, FL2+1);
+        }
+    }
+    
+    binding U {
+        invoke U;
+        click "face_pick_cw.stl";
+    }
+    
+    binding U' {
+        invoke U';
+        click "face_pick_ccw.stl";
+    }
+    
+    binding Um {
+        invoke Um;
+        click "middle_pick.stl";
+    }
+}
+
+operation dummy;
+
+binding dummy {
+    invoke dummy;
+    click "selector_0.stl";
+}

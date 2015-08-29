@@ -1,0 +1,4 @@
+build/*
+!build/strcube.pro
+pending models/
+src/Eigen/

@@ -1,0 +1,53 @@
+tag U = (1, 1, 1), D = (1, 0.8, 0), R = (0, 0, 0.8);
+tag L = (0, 0.5, 0), F = (0.8, 0, 0), B = (0.8, 0.3, 0);
+tag H, I, J, K, W, X, Y, Z;
+tag body = (0.1, 0.1, 0.1);
+
+symmetry x {
+    cycle (U, R, D, L), (H, W, Z, I), (K, X, Y, J);
+    axisangle (1, 0, 0, -90);
+}
+
+symmetry y {
+    cycle (F, U, B, D), (H, K, X, W), (I, J, Y, Z);
+    axisangle (0, 1, 0, -90);
+}
+
+geometry center {
+    model "center_block.stl";
+    model "center_sticker.stl";
+}
+
+geometry corner {
+    model "corner_block.stl";
+    model "corner_sticker.stl";
+    rotate(-90, -90, 0)
+        model "corner_sticker.stl";
+    rotate(90, 0, 90)
+        model "corner_sticker.stl";
+}
+
+
+auto (x, y) {
+    block U/R = center(body, U), H/U = corner(body, U, R, F);
+    block alias (U/R, U/F), (H/U, H/R);
+    position U/R, H/U;
+    
+    operation H {
+        axisangle (1, 1, 1, -120) {
+            shift (F/U, U/R), (F/L, U/B), (F/D, U/L), (F/R, U/F);
+            shift (H/F, H/U), (W/F, I/U), (W/R, I/F), (W/D, I/L);
+        }
+    }
+    operation H' inverse H;
+    
+    binding H {
+        invoke H;
+        click "selector_cw.stl";
+    }
+    
+    binding H' {
+        invoke H';
+        click "selector_ccw.stl";
+    }
+}
