@@ -2,3 +2,6 @@ build/*
 !build/strcube.pro
 pending models/
 src/Eigen/
+src/011_CubotRevise.cbp
+src/011_CubotRevise.depend
+src/011_CubotRevise.layout
