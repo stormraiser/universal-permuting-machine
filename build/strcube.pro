@@ -5,6 +5,7 @@
 TEMPLATE = app
 TARGET = strcube
 INCLUDEPATH += . ../src
+# INCLUDEPATH += /path/to/Eigen
 QT += widgets opengl
 
 win32 {
