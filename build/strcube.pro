@@ -28,6 +28,7 @@ HEADERS += ../src/Cube.h \
            ../src/CommandSem.h \
            ../src/DisjointSet.h \
            ../src/DisplayBoard.h \
+           ../src/DisplayWindow.h \
            ../src/Errors.h \
            ../src/MainWindow.h \
            ../src/MeshObject.h \
@@ -39,6 +40,7 @@ YACCSOURCES += ../src/cube.y ../src/command.y
 SOURCES += ../src/Cube.cpp \
            ../src/Objects.cpp \
            ../src/DisplayBoard.cpp \
+           ../src/DisplayWindow.cpp \
            ../src/main.cpp \
            ../src/MainWindow.cpp \
            ../src/MeshObject.cpp \

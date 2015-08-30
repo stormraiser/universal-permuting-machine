@@ -8,13 +8,24 @@
 
 using namespace std;
 
-DisplayBoard::DisplayBoard(QReadWriteLock &_cubeLock, QWidget *parent): QGLWidget(parent), cubeLock(_cubeLock){
+DisplayBoard::DisplayBoard(bool _isPrimary, Eigen::Affine3d _primaryMatrix, QReadWriteLock &_cubeLock, QGLWidget *shareWidget, QWidget *parent): QGLWidget(parent, shareWidget), cubeLock(_cubeLock){
     cube = 0;
     mouseX = 0;
     mouseY = 0;
     zoom = 0.25;
     trackBallRadius = 20;
-    trackMat = Eigen::Affine3d::Identity() * Eigen::AngleAxisd(-2.617993878, Eigen::Vector3d(0, 0, 1)) * Eigen::AngleAxisd(-0.6154797087, Eigen::Vector3d(0, 1, 0)) * Eigen::AngleAxisd(0.7853981634, Eigen::Vector3d(1, 0, 0));
+    isPrimary = _isPrimary;
+    trackPrimary = true;
+    if (isPrimary) {
+        primaryMatrix = Eigen::Affine3d::Identity();
+        localMatrix = _primaryMatrix;
+        rotateMatrix = localMatrix;
+    }
+    else {
+        primaryMatrix = _primaryMatrix;
+        localMatrix = Eigen::Affine3d::Identity();
+        rotateMatrix = primaryMatrix;
+    }
     setMouseTracking(true);
     displayMode = dispSolo;
     needSelection = true;
@@ -22,8 +33,6 @@ DisplayBoard::DisplayBoard(QReadWriteLock &_cubeLock, QWidget *parent): QGLWidge
 
 void DisplayBoard::setCube(Cube *p_cube){
     cube = p_cube;
-    makeCurrent();
-    cube->prepareDraw();
 }
 
 void DisplayBoard::initializeGL(){
@@ -52,6 +61,23 @@ void DisplayBoard::initializeGL(){
 void DisplayBoard::changeDisplayMode() {
     displayMode = (displayMode + 1) % totalMode;
     update();
+}
+
+QString DisplayBoard::getModeName(int mode) {
+    switch (mode) {
+    case dispSolo:
+        return QString("Solo");
+    case dispCross:
+        return QString("Stereocsopic 3D (cross)");
+    case dispParallel:
+        return QString("Stereoscopic 3D (parallel)");
+    case dispHolo:
+        return QString("Hologram (bottom)");
+    case dispHoloCross:
+        return QString("Stereocsopic 3D Hologram");
+    case dispFrontBack:
+        return QString("Front and back");
+    }
 }
 
 int DisplayBoard::viewCount() {
@@ -105,7 +131,7 @@ void DisplayBoard::setView(int index){
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
         gluLookAt(0, 0, 500, 0, 0, 0, 0, 1, 0);
-        glMultMatrixd(trackMat.data());
+        glMultMatrixd(rotateMatrix.data());
         break;
     case dispCross:
         switch (index) {
@@ -114,14 +140,14 @@ void DisplayBoard::setView(int index){
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
             gluLookAt(10, 0, 500, 0, 0, 0, 0, 1, 0);
-            glMultMatrixd(trackMat.data());
+            glMultMatrixd(rotateMatrix.data());
             break;
         case 1:
             setCrop(width() - width() / 2, 0, width() / 2, height());
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
             gluLookAt(-10, 0, 500, 0, 0, 0, 0, 1, 0);
-            glMultMatrixd(trackMat.data());
+            glMultMatrixd(rotateMatrix.data());
             break;
         }
         break;
@@ -132,14 +158,14 @@ void DisplayBoard::setView(int index){
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
             gluLookAt(-10, 0, 500, 0, 0, 0, 0, 1, 0);
-            glMultMatrixd(trackMat.data());
+            glMultMatrixd(rotateMatrix.data());
             break;
         case 1:
             setCrop(width() - width() / 2, 0, width() / 2, height());
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
             gluLookAt(10, 0, 500, 0, 0, 0, 0, 1, 0);
-            glMultMatrixd(trackMat.data());
+            glMultMatrixd(rotateMatrix.data());
             break;
         }
         break;
@@ -152,28 +178,28 @@ void DisplayBoard::setView(int index){
                 glMatrixMode(GL_MODELVIEW);
                 glLoadIdentity();
                 gluLookAt(0, 0, 500, 0, 0, 0, 0, 1, 0);
-                glMultMatrixd(trackMat.data());
+                glMultMatrixd(rotateMatrix.data());
                 break;
             case 1:
                 setCrop(width() / 2 + l / 6, height() / 2 - l / 6, l / 3, l / 3, true, false);
                 glMatrixMode(GL_MODELVIEW);
                 glLoadIdentity();
                 gluLookAt(500, 0, 0, 0, 0, 0, 0, 0, -1);
-                glMultMatrixd(trackMat.data());
+                glMultMatrixd(rotateMatrix.data());
                 break;
             case 2:
                 setCrop(width() / 2 - l / 6, height() / 2 + l / 6, l / 3, l / 3, false, true);
                 glMatrixMode(GL_MODELVIEW);
                 glLoadIdentity();
                 gluLookAt(0, 0, -500, 0, 0, 0, 0, -1, 0);
-                glMultMatrixd(trackMat.data());
+                glMultMatrixd(rotateMatrix.data());
                 break;
             case 3:
                 setCrop(width() / 2 - l / 2, height() / 2 - l / 6, l / 3, l / 3, true, false);
                 glMatrixMode(GL_MODELVIEW);
                 glLoadIdentity();
                 gluLookAt(-500, 0, 0, 0, 0, 0, 0, 0, -1);
-                glMultMatrixd(trackMat.data());
+                glMultMatrixd(rotateMatrix.data());
                 break;
             }
         }
@@ -185,14 +211,14 @@ void DisplayBoard::setView(int index){
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
             gluLookAt(0, 0, 500, 0, 0, 0, 0, 1, 0);
-            glMultMatrixd(trackMat.data());
+            glMultMatrixd(rotateMatrix.data());
             break;
         case 1:
             setCrop(width() - width() / 2, 0, width() / 2, height());
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
             gluLookAt(0, 0, -500, 0, 0, 0, 0, 1, 0);
-            glMultMatrixd(trackMat.data());
+            glMultMatrixd(rotateMatrix.data());
             break;
         }
         break;
@@ -205,56 +231,56 @@ void DisplayBoard::setView(int index){
                 glMatrixMode(GL_MODELVIEW);
                 glLoadIdentity();
                 gluLookAt(10, 0, 500, 0, 0, 0, 0, 1, 0);
-                glMultMatrixd(trackMat.data());
+                glMultMatrixd(rotateMatrix.data());
                 break;
             case 1:
                 setCrop(width() / 2, height() / 2 - l / 2, l / 4, l / 4, false, true);
                 glMatrixMode(GL_MODELVIEW);
                 glLoadIdentity();
                 gluLookAt(-10, 0, 500, 0, 0, 0, 0, 1, 0);
-                glMultMatrixd(trackMat.data());
+                glMultMatrixd(rotateMatrix.data());
                 break;
             case 2:
                 setCrop(width() / 2 + l / 4, height() / 2 - l / 4, l / 4, l / 4, true, false);
                 glMatrixMode(GL_MODELVIEW);
                 glLoadIdentity();
                 gluLookAt(500, -10, 0, 0, 0, 0, 0, 0, -1);
-                glMultMatrixd(trackMat.data());
+                glMultMatrixd(rotateMatrix.data());
                 break;
             case 3:
                 setCrop(width() / 2 + l / 4, height() / 2, l / 4, l / 4, true, false);
                 glMatrixMode(GL_MODELVIEW);
                 glLoadIdentity();
                 gluLookAt(500, 10, 0, 0, 0, 0, 0, 0, -1);
-                glMultMatrixd(trackMat.data());
+                glMultMatrixd(rotateMatrix.data());
                 break;
             case 4:
                 setCrop(width() / 2, height() / 2 + l / 4, l / 4, l / 4, false, true);
                 glMatrixMode(GL_MODELVIEW);
                 glLoadIdentity();
                 gluLookAt(10, 0, -500, 0, 0, 0, 0, -1, 0);
-                glMultMatrixd(trackMat.data());
+                glMultMatrixd(rotateMatrix.data());
                 break;
             case 5:
-                setCrop(width() / 2 - l / 4, height() / 2 + l / 4, l / 3, l / 4, false, true);
+                setCrop(width() / 2 - l / 4, height() / 2 + l / 4, l / 4, l / 4, false, true);
                 glMatrixMode(GL_MODELVIEW);
                 glLoadIdentity();
                 gluLookAt(-10, 0, -500, 0, 0, 0, 0, -1, 0);
-                glMultMatrixd(trackMat.data());
+                glMultMatrixd(rotateMatrix.data());
                 break;
             case 6:
                 setCrop(width() / 2 - l / 2, height() / 2, l / 4, l / 4, true, false);
                 glMatrixMode(GL_MODELVIEW);
                 glLoadIdentity();
                 gluLookAt(-500, 10, 0, 0, 0, 0, 0, 0, -1);
-                glMultMatrixd(trackMat.data());
+                glMultMatrixd(rotateMatrix.data());
                 break;
             case 7:
                 setCrop(width() / 2 - l / 2, height() / 2 - l / 4, l / 4, l / 4, true, false);
                 glMatrixMode(GL_MODELVIEW);
                 glLoadIdentity();
                 gluLookAt(-500, -10, 0, 0, 0, 0, 0, 0, -1);
-                glMultMatrixd(trackMat.data());
+                glMultMatrixd(rotateMatrix.data());
                 break;
             }
         }
@@ -266,7 +292,7 @@ void DisplayBoard::paintGL(){
     //renderLock.lock();
     GLuint color[4];
     if (cube != 0) {
-        if (needSelection) {
+        if (needSelection && mouseOver) {
             //glClearColor(0, 0, 0);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glDisable(GL_LIGHTING);
@@ -453,7 +479,11 @@ Eigen::Vector3d DisplayBoard::getTrackballVector(int x, int y, int area) {
     }
 }
 
-void DisplayBoard::mousePressEvent(QMouseEvent *event){
+Eigen::Affine3d DisplayBoard::getLocalMatrix() {
+    return localMatrix;
+}
+
+void DisplayBoard::mousePressEvent(QMouseEvent *event) {
     if ((event->buttons() & Qt::LeftButton) != 0) {
         if (cube != 0) {
             emit clicked();
@@ -465,20 +495,27 @@ void DisplayBoard::mousePressEvent(QMouseEvent *event){
     }
 }
 
-void DisplayBoard::mouseMoveEvent(QMouseEvent *event){
+void DisplayBoard::mouseMoveEvent(QMouseEvent *event) {
     mouseX = event->x();
     mouseY = event->y();
     if ((event->buttons() & Qt::RightButton) != 0) {
         trackVec1 = getTrackballVector(event->x(), event->y(), clickArea);
         Eigen::Vector3d axis = trackVec0.cross(trackVec1).normalized();
         double angle = acos(trackVec0.dot(trackVec1));
-        trackMat = Eigen::AngleAxisd(angle, axis) * trackMat;
+        localMatrix = Eigen::AngleAxisd(angle, axis) * localMatrix;
+        rotateMatrix = localMatrix * primaryMatrix;
+        update();
+        if (isPrimary) {
+            emit rotated(angle, axis);
+        }
         trackVec0 = trackVec1;
     }
-    update();
+    else {
+        update();
+    }
 }
 
-void DisplayBoard::mouseReleaseEvent(QMouseEvent *event){
+void DisplayBoard::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 void DisplayBoard::wheelEvent(QWheelEvent *event) {
@@ -494,5 +531,37 @@ void DisplayBoard::wheelEvent(QWheelEvent *event) {
     event->accept();
 }
 
-void DisplayBoard::keyPressEvent(QKeyEvent *event){
+void DisplayBoard::keyPressEvent(QKeyEvent *event) {
+}
+
+void DisplayBoard::primaryRotate(const Eigen::Affine3d &mat, const Eigen::Affine3d &inv) {
+    primaryMatrix = mat * primaryMatrix;
+    if (!trackPrimary) {
+        localMatrix = localMatrix * inv;
+    }
+    rotateMatrix = localMatrix * primaryMatrix;
+    update();
+}
+
+void DisplayBoard::enterEvent(QEvent *event) {
+    mouseOver = true;
+}
+
+void DisplayBoard::leaveEvent(QEvent *event) {
+    mouseOver = false;
+}
+
+void DisplayBoard::setDisplayMode(int _displayMode) {
+    displayMode = _displayMode;
+    update();
+}
+
+void DisplayBoard::resetView() {
+    localMatrix = Eigen::Affine3d::Identity();
+    rotateMatrix = localMatrix * primaryMatrix;
+    update();
+}
+
+void DisplayBoard::setTrackPrimary(bool _trackPrimary) {
+    trackPrimary = _trackPrimary;
 }
