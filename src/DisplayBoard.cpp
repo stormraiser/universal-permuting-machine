@@ -5,8 +5,19 @@
 #include <cstdio>
 #include <algorithm>
 #include <QThread>
+#include <QPainter>
 
 using namespace std;
+
+int cursorMask[9][9] = {{  0,  0,  0, -1, -1, -1,  0,  0,  0},
+                        {  0,  0,  0, -1,  1, -1,  0,  0,  0},
+                        {  0,  0,  0, -1,  1, -1,  0,  0,  0},
+                        { -1, -1, -1, -1,  1, -1, -1, -1, -1},
+                        { -1,  1,  1,  1,  1,  1,  1,  1, -1},
+                        { -1, -1, -1, -1,  1, -1, -1, -1, -1},
+                        {  0,  0,  0, -1,  1, -1,  0,  0,  0},
+                        {  0,  0,  0, -1,  1, -1,  0,  0,  0},
+                        {  0,  0,  0, -1, -1, -1,  0,  0,  0}};
 
 DisplayBoard::DisplayBoard(bool _isPrimary, Eigen::Affine3d _primaryMatrix, QReadWriteLock &_cubeLock, QGLWidget *shareWidget, QWidget *parent): QGLWidget(parent, shareWidget), cubeLock(_cubeLock){
     cube = 0;
@@ -41,7 +52,6 @@ void DisplayBoard::initializeGL(){
     float diffuse1[3] = {0.2f, 0.2f, 0.2f}, ambient1[3] = {0.05f, 0.05f, 0.05f}, specular1[3] = {0.0f, 0.0f, 0.0f}, pos1[4] = {-300, -200, -500, 0};
     glEnable(GL_LIGHTING);
     glViewport(0, 0, width(), height());
-    glEnable(GL_DEPTH_TEST);
     glSelectBuffer(1000, selectBuf);
     glCullFace(GL_BACK);
     glEnable(GL_LIGHT0);
@@ -289,11 +299,14 @@ void DisplayBoard::setView(int index){
 }
 
 void DisplayBoard::paintGL(){
+    QPainter painter(this);
+    painter.beginNativePainting();
+    glEnable(GL_DEPTH_TEST);
     //renderLock.lock();
     GLuint color[4];
     if (cube != 0) {
         if (needSelection && mouseOver) {
-            //glClearColor(0, 0, 0);
+            glClearColor(0, 0, 0, 1);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glDisable(GL_LIGHTING);
             glShadeModel(GL_FLAT);
@@ -310,6 +323,12 @@ void DisplayBoard::paintGL(){
             glEnable(GL_LIGHTING);
             glShadeModel(GL_SMOOTH);
         }
+        if ((displayMode == dispHolo) || (displayMode == dispHoloCross)) {
+            glClearColor(0, 0, 0, 1);
+        }
+        else {
+            glClearColor(0.7, 0.7, 0.7, 1);
+        }
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         for (int i = 0; i < viewCount(); i++) {
             setView(i);
@@ -319,9 +338,29 @@ void DisplayBoard::paintGL(){
         }
     }
     else {
+        glClearColor(0.7, 0.7, 0.7, 1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
     //renderLock.unlock();
+    painter.endNativePainting();
+    if (mouseOver && (displayMode == dispHolo) || (displayMode == dispHoloCross)) {
+        painter.setPen(QColor(255, 255, 255));
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (cursorMask[i][j] > 0) {
+                    painter.drawPoint(mouseX - 4 + i, mouseY - 4 + j);
+                }
+            }
+        }
+        painter.setPen(QColor(0, 0, 0));
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (cursorMask[i][j] < 0) {
+                    painter.drawPoint(mouseX - 4 + i, mouseY - 4 + j);
+                }
+            }
+        }
+    }
 }
 
 int DisplayBoard::getClickArea(int x, int y) {
@@ -340,6 +379,54 @@ int DisplayBoard::getClickArea(int x, int y) {
         return x - width() / 2 + y - height() / 2 > 0 ?
             (x - width() / 2 < y - height() / 2 ? (x < width() / 2 ? 0 : 1) : (y > height() / 2 ? 2 : 3)) :
             (x - width() / 2 > y - height() / 2 ? (x > width() / 2 ? 4 : 5) : (y < height() / 2 ? 6 : 7));
+    }
+}
+
+void DisplayBoard::flipMousePosition() {
+    int cy;
+    switch (displayMode) {
+    case dispHolo:
+        {
+            int l = (width() < height() ? width() : height()) / 3;
+            switch (getClickArea(mouseX, mouseY)) {
+            case 0:
+                cy = height() / 2 + l;
+                break;
+            case 1:
+            case 3:
+                cy = height() / 2;
+                break;
+            case 2:
+                cy = height() / 2 - l;
+                break;
+            }
+        }
+        mouseY = cy * 2 - mouseY;
+        break;
+    case dispHoloCross:
+        {
+            int l = (width() < height() ? width() : height()) / 4;
+            switch (getClickArea(mouseX, mouseY)) {
+            case 0:
+            case 1:
+                cy = height() / 2 + l * 3 / 2;
+                break;
+            case 2:
+            case 7:
+                cy = height() / 2 + l / 2;
+                break;
+            case 3:
+            case 6:
+                cy = height() / 2 - l / 2;
+                break;
+            case 4:
+            case 5:
+                cy = height() / 2 - l * 3 / 2;
+                break;
+            }
+        }
+        mouseY = cy * 2 - mouseY;
+        break;
     }
 }
 
@@ -377,17 +464,14 @@ Eigen::Vector3d DisplayBoard::getTrackballVector(int x, int y, int area) {
             case 1:
                 cx = width() / 2 + l;
                 cy = height() / 2;
-                r = l * zoom;
                 break;
             case 2:
                 cx = width() / 2;
                 cy = height() / 2 - l;
-                r = l * zoom;
                 break;
             case 3:
                 cx = width() / 2 - l;
                 cy = height() / 2;
-                r = l * zoom;
                 break;
             }
         }
@@ -484,22 +568,26 @@ Eigen::Affine3d DisplayBoard::getLocalMatrix() {
 }
 
 void DisplayBoard::mousePressEvent(QMouseEvent *event) {
+    mouseX = event->x();
+    mouseY = event->y();
+    flipMousePosition();
     if ((event->buttons() & Qt::LeftButton) != 0) {
         if (cube != 0) {
             emit clicked();
         }
     }
     if ((event->buttons() & Qt::RightButton) != 0) {
-        clickArea = getClickArea(event->x(), event->y());
-        trackVec0 = getTrackballVector(event->x(), event->y(), clickArea);
+        clickArea = getClickArea(mouseX, mouseY);
+        trackVec0 = getTrackballVector(mouseX, mouseY, clickArea);
     }
 }
 
 void DisplayBoard::mouseMoveEvent(QMouseEvent *event) {
     mouseX = event->x();
     mouseY = event->y();
+    flipMousePosition();
     if ((event->buttons() & Qt::RightButton) != 0) {
-        trackVec1 = getTrackballVector(event->x(), event->y(), clickArea);
+        trackVec1 = getTrackballVector(mouseX, mouseY, clickArea);
         Eigen::Vector3d axis = trackVec0.cross(trackVec1).normalized();
         double angle = acos(trackVec0.dot(trackVec1));
         localMatrix = Eigen::AngleAxisd(angle, axis) * localMatrix;

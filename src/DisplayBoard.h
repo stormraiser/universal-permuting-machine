@@ -44,6 +44,7 @@ private:
 
     void setView(int index);
     void setSelection();
+    void flipMousePosition();
 
 protected:
     void enterEvent(QEvent *event);
