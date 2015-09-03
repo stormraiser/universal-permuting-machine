@@ -13,7 +13,7 @@ WHITESPACE          ([ \t]+)
 LINE_COMMENT        ("//"[^\n]*\n)
 IDENTIFIER          ([_A-Za-z][_0-9A-Za-z+@#$%&/\-']*)
 NUMBER              (-?[0-9]*(\.[0-9]*)?)
-STRING_LITERAL      L?\"([^\"\\\n]|(\\['\"?\\abfnrtv])|(\\([0123456]{1,3}))|(\\x[[:xdigit:]]+)|(\\u([[:xdigit:]]{4}))|(\\U([[:xdigit:]]{8})))*\"
+STRING_LITERAL      \"([^\"\\\n]|(\\['\"?\\abfnrtv])|(\\([0123456]{1,3}))|(\\x[[:xdigit:]]+)|(\\u([[:xdigit:]]{4}))|(\\U([[:xdigit:]]{8})))*\"
 
 %x C
 %option noyywrap
@@ -66,12 +66,6 @@ STRING_LITERAL      L?\"([^\"\\\n]|(\\['\"?\\abfnrtv])|(\\([0123456]{1,3}))|(\\x
 "symmetry"          { return SYMMETRY; }
 "tag"               { return TAG; }
 "translate"         { return TRANSLATE; }
-
-<INITIAL>"/*"       { BEGIN(C); }
-<C>"*/"             { BEGIN(INITIAL); }
-<C>[^*\n]           { }
-<C>"*"[^/]          { }
-<C>\n               { }
 
 {IDENTIFIER}        {
                         *yylval_param = new CubeSem(CubeSem::semIdentifier);

@@ -13,6 +13,7 @@
 #include <Eigen/Eigen>
 #include "Cube.h"
 #include "DisplayWindow.h"
+#include "CubeDescriptionHighlighter.h"
 
 using namespace std;
 
@@ -35,9 +36,12 @@ private:
     bool showAnimation;
     DisplayWindow *primaryView;
     map<int, DisplayWindow*> viewWindows;
+    QTextEdit *codeEdit;
+    CubeDescriptionHighlighter *highlighter;
 
     void boardUpdate();
     void boardUpdateGL();
+    void commandScrambleCube();
     void setCube(Cube *_cube);
 
 public:

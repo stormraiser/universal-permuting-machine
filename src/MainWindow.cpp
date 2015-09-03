@@ -8,6 +8,8 @@
 #include <QStringList>
 #include <QColor>
 #include <QDir>
+#include <QFile>
+#include <QTextStream>
 #include "CommandSem.h"
 
 #include <cstdio>
@@ -30,6 +32,14 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent){
     commandEdit = new QLineEdit();
     commandView = new QTextEdit();
     newViewButton = new QPushButton("Create new window");
+
+    codeEdit = new QTextEdit;
+    codeEdit->setFontFamily("monospace");
+    highlighter = new CubeDescriptionHighlighter(codeEdit->document());
+
+    QTabWidget *mainTab = new QTabWidget;
+    mainTab->addTab(primaryView, "Player");
+    mainTab->addTab(codeEdit, "Code");
 
     QHBoxLayout *loadLayout = new QHBoxLayout;
     loadLayout->addWidget(loadButton);
@@ -61,9 +71,9 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent){
     scrambleSpin->setValue(20);
 
     QHBoxLayout *mainLayout = new QHBoxLayout;
-    mainLayout->addWidget(primaryView);
-    primaryView->setMinimumSize(300, 300);
-    primaryView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    mainLayout->addWidget(mainTab);
+    mainTab->setMinimumSize(300, 300);
+    mainTab->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     mainLayout->addWidget(widgetR);
 
     QWidget *centralWidget = new QWidget;
@@ -97,6 +107,11 @@ void MainWindow::loadFile(){
             setCube(_cube);
             commandView->setTextColor(QColor(0, 128, 0));
             commandView->insertPlainText(QString(translator->getMessage().c_str()));
+            codeEdit->setWindowTitle(info.fileName());
+            QFile file(str);
+            file.open(QFile::ReadOnly);
+            QTextStream stream(&file);
+            codeEdit->setText(stream.readAll());
         }
         else {
             commandView->setTextColor(QColor(224, 0, 0));
@@ -128,6 +143,15 @@ void MainWindow::scrambleCube(){
     }
 }
 
+void MainWindow::commandScrambleCube(){
+    if (cube != 0) {
+        cubeLock.lockForWrite();
+        cube->scramble(1);
+        cubeLock.unlock();
+        boardUpdate();
+    }
+}
+
 void MainWindow::executeCommand() {
     commandScanString(commandEdit->text().toLatin1().data());
     CommandSem *command = 0;
@@ -140,7 +164,13 @@ void MainWindow::executeCommand() {
         commandView->insertPlainText(QString("Command: %1\n").arg(commandEdit->text()));
         commandEdit->clear();
         for (string str : command->stringList) {
-            switch (cube->setActiveBinding(str)) {
+            if (str == string("scramble")) {
+                commandScrambleCube();
+            }
+            else if (str == string("reset")) {
+                resetCube();
+            }
+            else switch (cube->setActiveBinding(str)) {
             case 0:
                 operateCube();
                 break;
