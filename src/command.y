@@ -8,13 +8,14 @@
 
 using namespace std;
 
-int yylex();
-void yyerror(char const*) {};
-extern CommandSem *command;
+int yylex(CommandSem **lvalp);
+void yyerror (CommandSem **valp, char const *msg) {};
 
 %}
 
 %define api.value.type {CommandSem*}
+%define api.pure full
+%parse-param {CommandSem **command}
 
 %token IDENTIFIER NUMBER
 
@@ -23,7 +24,7 @@ extern CommandSem *command;
 command :   seq
         {
             $$ = $1;
-            command = $$;
+            *command = $$;
         }
         ;
 

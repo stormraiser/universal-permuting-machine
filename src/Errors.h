@@ -15,7 +15,7 @@ public:
     virtual string message() = 0;
     string toString() {
         stringstream s;
-        s << "Line " << location.line << ", column " << location.column << ": " << message();
+        s << "Line " << location.first_line << ", column " << location.first_column << ": " << message();
         return s.str();
     }
 };

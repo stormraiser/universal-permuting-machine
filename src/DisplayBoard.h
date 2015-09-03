@@ -21,7 +21,6 @@ private:
     static const int dispHolo = 3;
     static const int dispFrontBack = 4;
     static const int dispHoloCross = 5;
-    //static const int dispFrontBackCross = 5,
 
     int displayMode;
 

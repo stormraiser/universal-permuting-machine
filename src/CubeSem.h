@@ -6,12 +6,11 @@
 
 using namespace std;
 
-struct Location {
-    int line, column;
+class CubeSem;
 
-    Location(int _line = 0, int _column = 0):
-        line(_line), column(_column){}
-};
+#include "cube_yacc.h"
+
+typedef YYLTYPE Location;
 
 class CubeSem {
 public:
@@ -70,8 +69,7 @@ public:
         semTransformStmt               // Used for error reporting only. Stands for any of the three transformations.
     };
 
-    CubeSem(){cubeSemList.push_back(this);}
-    CubeSem(int _line, int _column, Type _type): location(_line, _column), type(_type), child(0){cubeSemList.push_back(this);}
+    CubeSem(Type _type): type(_type), child(0){cubeSemList.push_back(this);}
     CubeSem(Location _location, Type _type): location(_location), type(_type), child(0){cubeSemList.push_back(this);}
 
     static string typeString(Type _type) {
@@ -192,6 +190,7 @@ public:
     vector<CubeSem*> childList;
     Eigen::Affine3d transformation;
 
+    /*
     CubeSem *copy() {
         CubeSem *ret = new CubeSem(location, type);
         ret->number = number;
@@ -206,6 +205,7 @@ public:
         ret->transformation = transformation;
         return ret;
     }
+    */
 
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 

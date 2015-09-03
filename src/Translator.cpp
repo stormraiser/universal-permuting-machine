@@ -8,11 +8,8 @@
 using namespace std;
 
 extern FILE *cubein;
-extern CubeSem *cubelval;
 
-int cubeparse();
-
-CubeSem *treeTop = 0;
+int cubeparse(CubeSem **treeTop);
 
 Cube *Translator::translate(string path, string filename) {
     cout << path << endl << filename << endl;
@@ -81,7 +78,7 @@ Cube *Translator::translate(string path, string filename) {
 }
 
 CubeSem *Translator::parseFile(string filename) {
-    CubeSem *ret = 0;
+    CubeSem *ret;
     if (files.find(filename) == files.end()) {
         files.insert(filename);
         cubein = fopen(string(m_path).append(filename).c_str(), "r");
@@ -89,18 +86,18 @@ CubeSem *Translator::parseFile(string filename) {
             return 0;
         }
         printf("parsing file %s...\n", filename.c_str());
-        if (cubeparse() == 0) {
-            ret = treeTop;
+        if (cubeparse(&ret) == 0) {
             printf("success.\n");
+            fclose(cubein);
+            return ret;
         }
         else {
-            //delete cubelval;
             printf("fail.\n");
+            fclose(cubein);
+            return 0;
         }
-        treeTop = 0;
-        fclose(cubein);
     }
-    return ret;
+    return 0;
 }
 
 void Translator::pass0(CubeSem *node) {
@@ -1405,7 +1402,7 @@ void Translator::processStartStmt() {
         if ((blockList[i]->alias == i) && (startList[i] == -1)) {
             auto s = positions.find(blockList[i]->name);
             if (s == positions.end()) {
-                errorList.push_back(new GenericError(Location(0, 0), "Starting position not specified"));
+                errorList.push_back(new GenericError(Location(), "Starting position not specified"));
             }
             int k = s->second->id;
             startList[i] = k;

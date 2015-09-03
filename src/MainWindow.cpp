@@ -12,11 +12,9 @@
 
 #include <cstdio>
 
-CommandSem *command;
-
 void commandScanString(const char *str);
 void commandDoneString();
-int commandparse();
+int commandparse(CommandSem **command);
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent){
     cube = 0;
@@ -132,7 +130,8 @@ void MainWindow::scrambleCube(){
 
 void MainWindow::executeCommand() {
     commandScanString(commandEdit->text().toLatin1().data());
-    if (commandparse() != 0) {
+    CommandSem *command = 0;
+    if (commandparse(&command) != 0) {
         commandView->setTextColor(QColor(224, 0, 0));
         commandView->insertPlainText(QString("Syntax error\n"));
     }

@@ -5,22 +5,15 @@
 #include "CommandSem.h"
 #include "command_yacc.h"
 
-#define YYSTYPE CommandSem*
-
 using namespace std;
 
 }
-
-%{
-static string buffer;
-
-extern CommandSem *commandlval;
-%}
 
 IDENTIFIER          ([_A-Za-z][_0-9A-Za-z+@#$%&/\-']*)
 NUMBER              ([0-9]+)
 
 %option noyywrap
+%option bison-bridge
 
 %%
 
@@ -28,15 +21,14 @@ NUMBER              ([0-9]+)
 ")"                 { return ')'; }
 
 {IDENTIFIER}        {
-                        commandlval = new CommandSem;
-                        commandlval->s = string(yytext, yyleng);
+                        *yylval_param = new CommandSem;
+                        (*yylval_param)->s = string(yytext, yyleng);
                         return IDENTIFIER;
                     }
 
 {NUMBER}            {
-                        commandlval = new CommandSem;
-                        buffer = string(yytext, yyleng);
-                        stringstream(buffer) >> commandlval->i;
+                        *yylval_param = new CommandSem;
+                        stringstream(string(yytext, yyleng)) >> (*yylval_param)->i;
                         return NUMBER;
                     }
 
