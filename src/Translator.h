@@ -17,6 +17,9 @@
 using namespace std;
 
 class Translator {
+public:
+    static vector<Error*> globalErrorList;
+
 private:
     vector<string> fileStack;
     vector<CubeSem::Type> envStack;

@@ -10,6 +10,7 @@
 #include <QDir>
 #include <QFile>
 #include <QTextStream>
+#include <QScrollBar>
 #include "CommandSem.h"
 
 #include <cstdio>
@@ -106,7 +107,8 @@ void MainWindow::loadFile(){
         if (_cube != 0) {
             setCube(_cube);
             commandView->setTextColor(QColor(0, 128, 0));
-            commandView->insertPlainText(QString(translator->getMessage().c_str()));
+            commandView->append(QString(translator->getMessage().c_str()));
+            commandView->verticalScrollBar()->setValue(commandView->verticalScrollBar()->maximum());
             codeEdit->setWindowTitle(info.fileName());
             QFile file(str);
             file.open(QFile::ReadOnly);
@@ -115,7 +117,8 @@ void MainWindow::loadFile(){
         }
         else {
             commandView->setTextColor(QColor(224, 0, 0));
-            commandView->insertPlainText(QString(translator->getMessage().c_str()));
+            commandView->append(QString(translator->getMessage().c_str()));
+            commandView->verticalScrollBar()->setValue(commandView->verticalScrollBar()->maximum());
         }
         delete translator;
     }
@@ -123,10 +126,20 @@ void MainWindow::loadFile(){
 
 void MainWindow::resetCube(){
     if (cube != 0) {
+        commandView->setTextColor(QColor(0, 0, 224));
+        commandView->append(QString("Reset"));
+        commandView->verticalScrollBar()->setValue(commandView->verticalScrollBar()->maximum());
         cubeLock.lockForWrite();
         cube->reset();
-        commandView->setTextColor(QColor(0, 0, 224));
-        commandView->insertPlainText(QString("Reset\n"));
+        cubeLock.unlock();
+        boardUpdate();
+    }
+}
+
+void MainWindow::commandResetCube(){
+    if (cube != 0) {
+        cubeLock.lockForWrite();
+        cube->reset();
         cubeLock.unlock();
         boardUpdate();
     }
@@ -134,9 +147,10 @@ void MainWindow::resetCube(){
 
 void MainWindow::scrambleCube(){
     if (cube != 0) {
-        cubeLock.lockForWrite();
         commandView->setTextColor(QColor(0, 0, 224));
-        commandView->insertPlainText(QString("Scramble %1 steps\n").arg(scrambleSpin->value()));
+        commandView->append(QString("Scramble %1 steps").arg(scrambleSpin->value()));
+        commandView->verticalScrollBar()->setValue(commandView->verticalScrollBar()->maximum());
+        cubeLock.lockForWrite();
         cube->scramble(scrambleSpin->value());
         cubeLock.unlock();
         boardUpdate();
@@ -157,18 +171,20 @@ void MainWindow::executeCommand() {
     CommandSem *command = 0;
     if (commandparse(&command) != 0) {
         commandView->setTextColor(QColor(224, 0, 0));
-        commandView->insertPlainText(QString("Syntax error\n"));
+        commandView->append(QString("Syntax error"));
+        commandView->verticalScrollBar()->setValue(commandView->verticalScrollBar()->maximum());
     }
     else {
         commandView->setTextColor(QColor(0, 0, 224));
-        commandView->insertPlainText(QString("Command: %1\n").arg(commandEdit->text()));
+        commandView->append(QString("Command: %1").arg(commandEdit->text()));
+        commandView->verticalScrollBar()->setValue(commandView->verticalScrollBar()->maximum());
         commandEdit->clear();
         for (string str : command->stringList) {
             if (str == string("scramble")) {
                 commandScrambleCube();
             }
             else if (str == string("reset")) {
-                resetCube();
+                commandResetCube();
             }
             else switch (cube->setActiveBinding(str)) {
             case 0:
@@ -176,11 +192,13 @@ void MainWindow::executeCommand() {
                 break;
             case -1:
                 commandView->setTextColor(QColor(224, 0, 0));
-                commandView->insertPlainText(QString("Unknown binding: %1\n").arg(QString(str.c_str())));
+                commandView->append(QString("Unknown binding: %1").arg(QString(str.c_str())));
+                commandView->verticalScrollBar()->setValue(commandView->verticalScrollBar()->maximum());
                 break;
             case -2:
                 commandView->setTextColor(QColor(224, 0, 0));
-                commandView->insertPlainText(QString("Binding invalid: %1\n").arg(QString(str.c_str())));
+                commandView->append(QString("Binding invalid: %1").arg(QString(str.c_str())));
+                commandView->verticalScrollBar()->setValue(commandView->verticalScrollBar()->maximum());
                 break;
             }
         }

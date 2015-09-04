@@ -101,41 +101,41 @@ auto (x, y) {
         }
     }
     
-    translate(0, 0, 33)
-        binding U {
-            invoke U;
+    binding U {
+        invoke U;
+        translate(0, 0, 33)
             click "selector_7_1_cw.stl";
-        }
-    
-    translate(0, 0, 33)
-        binding U' {
-            invoke U';
+    }
+
+    binding U' {
+        invoke U';
+        translate(0, 0, 33)
             click "selector_7_1_ccw.stl";
-        }
-    
-    translate(0, 0, 22)
-        binding U2 {
-            invoke U2;
+    }
+
+    binding U2 {
+        invoke U2;
+        translate(0, 0, 22)
             click "selector_7_2_cw.stl";
-        }
-    
-    translate(0, 0, 22)
-        binding U2' {
-            invoke U2';
+    }
+
+    binding U2' {
+        invoke U2';
+        translate(0, 0, 22)
             click "selector_7_2_ccw.stl";
-        }
-    
-    translate(0, 0, 11)
-        binding U3 {
-            invoke U3;
+    }
+
+    binding U3 {
+        invoke U3;
+        translate(0, 0, 11)
             click "selector_7_2_cw.stl";
-        }
-    
-    translate(0, 0, 11)
-        binding U3' {
-            invoke U3';
+    }
+
+    binding U3' {
+        invoke U3';
+        translate(0, 0, 11)
             click "selector_7_2_ccw.stl";
-        }
+    }
     
     binding Um {
         invoke Um;

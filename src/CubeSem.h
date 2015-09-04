@@ -19,6 +19,7 @@ public:
     enum Type {
         semAutoStmt,
         semAxisAngleStmt,
+        semBandageItem,
         semBandageStmt,
         semBindingStmt,
         semBlockAliasStmt,
@@ -78,6 +79,8 @@ public:
             return "symmetry expansion statement";
         case semAxisAngleStmt:
             return "axis-angle rotation";
+        case semBandageItem:
+            return "bandage item";
         case semBandageStmt:
             return "bandage declaration";
         case semBindingStmt:

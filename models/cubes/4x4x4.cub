@@ -63,29 +63,29 @@ auto (x, y) {
     }
     operation U2' inverse U2;
     
-    translate(0, 0, 24)
-        binding U {
-            invoke U;
+    binding U {
+        invoke U;
+        translate(0, 0, 24)
             click "selector_4_1_cw.stl";
-        }
-    
-    translate(0, 0, 24)
-        binding U' {
-            invoke U';
+    }
+
+    binding U' {
+        invoke U';
+        translate(0, 0, 24)
             click "selector_4_1_ccw.stl";
-        }
-    
-    translate(0, 0, 8)
-        binding U2 {
-            invoke U2;
+    }
+
+    binding U2 {
+        invoke U2;
+        translate(0, 0, 8)
             click "selector_4_2_cw.stl";
-        }
-    
-    translate(0, 0, 8)
-        binding U2' {
-            invoke U2';
+    }
+
+    binding U2' {
+        invoke U2';
+        translate(0, 0, 8)
             click "selector_4_2_ccw.stl";
-        }
+    }
 }
 
 operation dummy;

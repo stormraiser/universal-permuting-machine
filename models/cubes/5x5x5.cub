@@ -77,29 +77,29 @@ auto (x, y) {
         }
     }
     
-    translate(0, 0, 28)
-        binding U {
-            invoke U;
+    binding U {
+        invoke U;
+        translate(0, 0, 28)
             click "selector_5_1_cw.stl";
-        }
-    
-    translate(0, 0, 28)
-        binding U' {
-            invoke U';
+    }
+
+    binding U' {
+        invoke U';
+        translate(0, 0, 28)
             click "selector_5_1_ccw.stl";
-        }
-    
-    translate(0, 0, 14)
-        binding U2 {
-            invoke U2;
+    }
+
+    binding U2 {
+        invoke U2;
+        translate(0, 0, 14)
             click "selector_5_2_cw.stl";
-        }
-    
-    translate(0, 0, 14)
-        binding U2' {
-            invoke U2';
+    }
+
+    binding U2' {
+        invoke U2';
+        translate(0, 0, 14)
             click "selector_5_2_ccw.stl";
-        }
+    }
     
     binding Um {
         invoke Um;

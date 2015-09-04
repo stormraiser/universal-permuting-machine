@@ -42,6 +42,7 @@ private:
     void boardUpdate();
     void boardUpdateGL();
     void commandScrambleCube();
+    void commandResetCube();
     void setCube(Cube *_cube);
 
 public:

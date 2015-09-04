@@ -60,17 +60,17 @@ auto (x, y) {
             shift (R/U, F/U), (R/B, F/R), (R/D, F/D), (R/F, F/L), (RF, FL), (FR, LF);
     }
     
-    translate(0, 0, 19)
-        binding U {
-            invoke U;
+    binding U {
+        invoke U;
+        translate(0, 0, 19)
             click "selector_3_1_cw.stl";
-        }
+    }
     
-    translate(0, 0, 19)
-        binding U' {
-            invoke U';
+    binding U' {
+        invoke U';
+        translate(0, 0, 19)
             click "selector_3_1_ccw.stl";
-        }
+    }
     
     binding Um {
         invoke Um;

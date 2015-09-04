@@ -1,11 +1,15 @@
 %{
 #include "CubeSem.h"
 #include <iostream>
+#include "Errors.h"
+#include "Translator.h"
 
 using namespace std;
 
 int yylex(CubeSem **lvalp, YYLTYPE *llocp);
-void yyerror (YYLTYPE *locp, CubeSem **valp, char const *msg) {};
+void yyerror (YYLTYPE *locp, CubeSem **valp, char const *msg) {
+    Translator::globalErrorList.push_back(new GenericError(*locp, "Syntax error"));
+};
 
 %}
 
@@ -93,11 +97,7 @@ number_tuple        :   '(' number_list ')'
                         }
                     ;
 
-tuple_list_keyword  :   BANDAGE
-                        {
-                            $$ = new CubeSem(@$, CubeSem::semBandageStmt);
-                        }
-                    |   BLOCK ALIAS
+tuple_list_keyword  :   BLOCK ALIAS
                         {
                             $$ = new CubeSem(@$, CubeSem::semBlockAliasStmt);
                         }
@@ -275,9 +275,7 @@ block_item          :   IDENTIFIER '=' IDENTIFIER tuple
                             $$->child = $4;
                         }
                     |   IDENTIFIER
-                        {
-                            $$ = $1;
-                        }
+                    ;
 
 block_list          :   block_list ',' block_item
                         {
@@ -407,6 +405,35 @@ metadata_stmt       :   METADATA '{' metadata_list '}'
                         }
                     ;
 
+bandage_item        :   tuple '=' IDENTIFIER tuple
+                        {
+                            $$ = new CubeSem(@$, CubeSem::semBandageItem);
+                            $$->childList.push_back($1);
+                            $$->childList.push_back($4);
+                            $$->string1 = $3->string1;
+                        }
+                    |   tuple
+                    ;
+
+bandage_list        :   bandage_list ',' bandage_item
+                        {
+                            $$ = $1;
+                            $$->location = @$;
+                            $$->childList.push_back($3);
+                        }
+                    |   bandage_item
+                        {
+                            $$ = new CubeSem(@$, CubeSem::semBandageStmt);
+                            $$->childList.push_back($1);
+                        }
+                    ;
+
+bandage_stmt        :   BANDAGE bandage_list ';'
+                        {
+                            $$ = $2;
+                            $$->location = @$;
+                        }
+
 stmt                :   tuple_list_stmt
                     |   def_stmt
                     |   operation_stmt
@@ -421,8 +448,13 @@ stmt                :   tuple_list_stmt
                     |   control_stmt
                     |   start_stmt
                     |   metadata_stmt
+                    |   bandage_stmt
                     |   stmt_block
                     |   ';'
+                        {
+                            $$ = new CubeSem(@$, CubeSem::semEmptyStmt);
+                        }
+                    |   error
                         {
                             $$ = new CubeSem(@$, CubeSem::semEmptyStmt);
                         }

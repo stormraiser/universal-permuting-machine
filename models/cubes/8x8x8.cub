@@ -106,53 +106,53 @@ auto (x, y) {
     }
     operation U4' inverse U4;
     
-    translate(0, 0, 35)
-        binding U {
-            invoke U;
+    binding U {
+        invoke U;
+        translate(0, 0, 35)
             click "selector_8_1_cw.stl";
-        }
-    
-    translate(0, 0, 35)
-        binding U' {
-            invoke U';
+    }
+
+    binding U' {
+        invoke U';
+        translate(0, 0, 35)
             click "selector_8_1_ccw.stl";
-        }
-    
-    translate(0, 0, 25)
-        binding U2 {
-            invoke U2;
+    }
+
+    binding U2 {
+        invoke U2;
+        translate(0, 0, 25)
             click "selector_8_2_cw.stl";
-        }
-    
-    translate(0, 0, 25)
-        binding U2' {
-            invoke U2';
+    }
+
+    binding U2' {
+        invoke U2';
+        translate(0, 0, 25)
             click "selector_8_2_ccw.stl";
-        }
-    
-    translate(0, 0, 15)
-        binding U3 {
-            invoke U3;
+    }
+
+    binding U3 {
+        invoke U3;
+        translate(0, 0, 15)
             click "selector_8_2_cw.stl";
-        }
-    
-    translate(0, 0, 15)
-        binding U3' {
-            invoke U3';
+    }
+
+    binding U3' {
+        invoke U3';
+        translate(0, 0, 15)
             click "selector_8_2_ccw.stl";
-        }
-    
-    translate(0, 0, 5)
-        binding U4 {
-            invoke U4;
+    }
+
+    binding U4 {
+        invoke U4;
+        translate(0, 0, 5)
             click "selector_8_2_cw.stl";
-        }
-    
-    translate(0, 0, 5)
-        binding U4' {
-            invoke U4';
+    }
+
+    binding U4' {
+        invoke U4';
+        translate(0, 0, 5)
             click "selector_8_2_ccw.stl";
-        }
+    }
 }
 
 operation dummy;

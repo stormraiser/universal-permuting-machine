@@ -6,6 +6,20 @@
 #include "cube_yacc.h"
 
 using namespace std;
+
+#define UPDATE_LOCATION \
+    yylloc_param->first_line = yylloc_param->last_line; \
+    yylloc_param->first_column = yylloc_param->last_column; \
+    for (int i = 0; i < yyleng; i++) { \
+        if (yytext[i] == '\n') { \
+            yylloc_param->last_line++; \
+            yylloc_param->last_column = 1; \
+        } \
+        else { \
+            yylloc->last_column++; \
+        } \
+    }
+
 }
 
 NEWLINE             (\n|\r)
@@ -21,63 +35,66 @@ STRING_LITERAL      \"([^\"\\\n]|(\\['\"?\\abfnrtv])|(\\([0123456]{1,3}))|(\\x[[
 %option bison-locations
 
 %%
-{WHITESPACE}        { }
-{NEWLINE}           { }
-{LINE_COMMENT}      { }
+{WHITESPACE}        { UPDATE_LOCATION }
+{NEWLINE}           { UPDATE_LOCATION }
+{LINE_COMMENT}      { UPDATE_LOCATION }
 {STRING_LITERAL}    {
+                        UPDATE_LOCATION
                         *yylval_param = new CubeSem(CubeSem::semString);
                         (*yylval_param)->string1 = string(yytext + 1, yyleng - 2);
                         return STRING;
                     }
 
-","                 { return ','; }
-";"                 { return ';'; }
-"{"                 { return '{'; }
-"}"                 { return '}'; }
-"("                 { return '('; }
-")"                 { return ')'; }
-"="                 { return '='; }
-"alias"             { return ALIAS; }
-"at"                { return AT; }
-"auto"              { return AUTO; }
-"axisangle"         { return AXISANGLE; }
-"bandage"           { return BANDAGE; }
-"binding"           { return BINDING; }
-"block"             { return BLOCK; }
-"click"             { return CLICK; }
-"cycle"             { return CYCLE; }
-"equivalence"       { return EQUIVALENCE; }
-"forbid"            { return FORBID; }
-"geometry"          { return GEOMETRY; }
-"group"             { return GROUP; }
-"include"           { return INCLUDE; }
-"inverse"           { return INVERSE; }
-"invoke"            { return INVOKE; }
-"keyboard"          { return KEYBOARD; }
-"metadata"          { return METADATA; }
-"model"             { return MODEL; }
-"operation"         { return OPERATION; }
-"position"          { return POSITION; }
-"remove"            { return REMOVE; }
-"require"           { return REQUIRE; }
-"rotate"            { return ROTATE; }
-"shift"             { return SHIFT; }
-"start"             { return START; }
-"symmetry"          { return SYMMETRY; }
-"tag"               { return TAG; }
-"translate"         { return TRANSLATE; }
+","                 { UPDATE_LOCATION return ','; }
+";"                 { UPDATE_LOCATION return ';'; }
+"{"                 { UPDATE_LOCATION return '{'; }
+"}"                 { UPDATE_LOCATION return '}'; }
+"("                 { UPDATE_LOCATION return '('; }
+")"                 { UPDATE_LOCATION return ')'; }
+"="                 { UPDATE_LOCATION return '='; }
+"alias"             { UPDATE_LOCATION return ALIAS; }
+"at"                { UPDATE_LOCATION return AT; }
+"auto"              { UPDATE_LOCATION return AUTO; }
+"axisangle"         { UPDATE_LOCATION return AXISANGLE; }
+"bandage"           { UPDATE_LOCATION return BANDAGE; }
+"binding"           { UPDATE_LOCATION return BINDING; }
+"block"             { UPDATE_LOCATION return BLOCK; }
+"click"             { UPDATE_LOCATION return CLICK; }
+"cycle"             { UPDATE_LOCATION return CYCLE; }
+"equivalence"       { UPDATE_LOCATION return EQUIVALENCE; }
+"forbid"            { UPDATE_LOCATION return FORBID; }
+"geometry"          { UPDATE_LOCATION return GEOMETRY; }
+"group"             { UPDATE_LOCATION return GROUP; }
+"include"           { UPDATE_LOCATION return INCLUDE; }
+"inverse"           { UPDATE_LOCATION return INVERSE; }
+"invoke"            { UPDATE_LOCATION return INVOKE; }
+"keyboard"          { UPDATE_LOCATION return KEYBOARD; }
+"metadata"          { UPDATE_LOCATION return METADATA; }
+"model"             { UPDATE_LOCATION return MODEL; }
+"operation"         { UPDATE_LOCATION return OPERATION; }
+"position"          { UPDATE_LOCATION return POSITION; }
+"remove"            { UPDATE_LOCATION return REMOVE; }
+"require"           { UPDATE_LOCATION return REQUIRE; }
+"rotate"            { UPDATE_LOCATION return ROTATE; }
+"shift"             { UPDATE_LOCATION return SHIFT; }
+"start"             { UPDATE_LOCATION return START; }
+"symmetry"          { UPDATE_LOCATION return SYMMETRY; }
+"tag"               { UPDATE_LOCATION return TAG; }
+"translate"         { UPDATE_LOCATION return TRANSLATE; }
 
 {IDENTIFIER}        {
+                        UPDATE_LOCATION
                         *yylval_param = new CubeSem(CubeSem::semIdentifier);
                         (*yylval_param)->string1 = string(yytext, yyleng);
                         return IDENTIFIER;
                     }
 
 {NUMBER}            {
+                        UPDATE_LOCATION
                         *yylval_param = new CubeSem(CubeSem::semNumber);
                         stringstream(string(yytext, yyleng)) >> (*yylval_param)->number;
                         return NUMBER;
                     }
 
-.                   { }
+.                   { UPDATE_LOCATION }
 <<EOF>>             { yyterminate(); }

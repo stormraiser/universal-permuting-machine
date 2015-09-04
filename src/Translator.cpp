@@ -4,18 +4,27 @@
 #include <algorithm>
 #include <cstdio>
 #include <iostream>
+#include "cube_yacc.h"
 
 using namespace std;
 
 extern FILE *cubein;
 
-int cubeparse(CubeSem **treeTop);
+vector<Error*> Translator::globalErrorList = vector<Error*>();
 
 Cube *Translator::translate(string path, string filename) {
     cout << path << endl << filename << endl;
+    globalErrorList.clear();
     tree = parseFile(string(path).append(filename));
     fileStack.push_back(filename);
     m_path = path;
+    if (!globalErrorList.empty()) {
+        errorList.insert(errorList.begin(), globalErrorList.begin(), globalErrorList.end());
+        generateMessage();
+        cout << getMessage();
+        cleanUp();
+        return 0;
+    }
     if (tree == 0) {
         return 0;
     }
@@ -30,15 +39,10 @@ Cube *Translator::translate(string path, string filename) {
         cleanUp();
         return 0;
     }
-    printf("pass 0 done.\n");
     processMetadataStmt();
-    printf("metadata done.\n");
     processTagStmt();
-    printf("tag done.\n");
     processSymmetryStmt();
-    printf("symmetry done.\n");
     processGeometryStmt();
-    printf("geometry done.\n");
     if (!errorList.empty()) {
         generateMessage();
         cout << getMessage();
@@ -46,21 +50,13 @@ Cube *Translator::translate(string path, string filename) {
         return 0;
     }
     pass1(tree);
-    printf("pass 1 done.\n");
     processBlockStmt();
-    printf("block done.\n");
     processBlockRelationshipStmt();
-    printf("block relationship done.\n");
     processPositionStmt();
-    printf("position done.\n");
     processPositionRelationshipStmt();
-    printf("position relationship done.\n");
     processOperationStmt();
-    printf("operation done.\n");
     processBindingStmt();
-    printf("binding done.\n");
     processStartStmt();
-    printf("start done.\n");
 
     if (!errorList.empty()) {
         generateMessage();
@@ -73,7 +69,6 @@ Cube *Translator::translate(string path, string filename) {
     cout << getMessage();
     Cube *ret = getCube();
     cleanUp();
-    printf("all done.\n");
     return ret;
 }
 
@@ -85,14 +80,11 @@ CubeSem *Translator::parseFile(string filename) {
         if (cubein == 0) {
             return 0;
         }
-        printf("parsing file %s...\n", filename.c_str());
         if (cubeparse(&ret) == 0) {
-            printf("success.\n");
             fclose(cubein);
             return ret;
         }
         else {
-            printf("fail.\n");
             fclose(cubein);
             return 0;
         }
@@ -104,10 +96,6 @@ void Translator::pass0(CubeSem *node) {
     if (node == 0) {
         return;
     }
-
-    //
-    //cout << string(identLevel * 4, ' ') << node->location.line << ' ' << node->location.column << ' ' << CubeSem::typeString(node->type) << endl;
-    //identLevel++;
 
     switch (node->type) {
     case CubeSem::semBandageStmt:
@@ -222,7 +210,7 @@ void Translator::pass0(CubeSem *node) {
         autoLevel--;
         break;
     case CubeSem::semRotateStmt:
-        if ((envStack.back() != CubeSem::semTop) && (envStack.back() != CubeSem::semGeometryStmt)) {
+        if ((envStack.back() != CubeSem::semTop) && (envStack.back() != CubeSem::semGeometryStmt) && (envStack.back() != CubeSem::semBindingStmt)) {
             errorList.push_back(new MisplacedStatementError(node->location, node->type, envStack.back()));
         }
         if ((node->numberList.size() != 3)) {
@@ -241,7 +229,7 @@ void Translator::pass0(CubeSem *node) {
             errorList.push_back(new MisplacedStatementError(node->location, node->type, envStack.back()));
             }
         }
-        else if ((envStack.back() != CubeSem::semTop) && (envStack.back() != CubeSem::semGeometryStmt) && (envStack.back() != CubeSem::semOperationStmt)) {
+        else if ((envStack.back() != CubeSem::semTop) && (envStack.back() != CubeSem::semGeometryStmt) && (envStack.back() != CubeSem::semOperationStmt) && (envStack.back() != CubeSem::semBindingStmt)) {
             errorList.push_back(new MisplacedStatementError(node->location, node->type, envStack.back()));
         }
         if (node->numberList.size() == 4) {
@@ -255,7 +243,7 @@ void Translator::pass0(CubeSem *node) {
         transformLevel--;
         break;
     case CubeSem::semTranslateStmt:
-        if ((envStack.back() != CubeSem::semTop) && (envStack.back() != CubeSem::semGeometryStmt) && (envStack.back() != CubeSem::semOperationStmt)) {
+        if ((envStack.back() != CubeSem::semTop) && (envStack.back() != CubeSem::semGeometryStmt) && (envStack.back() != CubeSem::semOperationStmt) && (envStack.back() != CubeSem::semBindingStmt)) {
             errorList.push_back(new MisplacedStatementError(node->location, node->type, envStack.back()));
         }
         if ((node->numberList.size() != 3)) {
@@ -273,9 +261,6 @@ void Translator::pass0(CubeSem *node) {
     default:
         break;
     }
-
-    //
-    //identLevel--;
 }
 
 void Translator::processMetadataStmt() {
@@ -370,11 +355,6 @@ void Translator::processTagStmt() {
         }
     }
     tagStmtList.clear();
-    /*
-    for (TranslatorTag *tag : tagList) {
-        cout << tag->toString();
-    }
-    */
 }
 
 void Translator::symmetryPass(CubeSem *node, TranslatorSymmetry *symmetry) {
@@ -464,11 +444,6 @@ void Translator::processSymmetryStmt() {
             }
         }
     }
-    /*
-    for (auto p : symmetries) {
-        cout << p.second->toString();
-    }
-    */
 }
 
 MeshObject *Translator::loadMeshObject(string filename) {
@@ -535,11 +510,6 @@ void Translator::processGeometryStmt() {
         }
     }
     geometryStmtList.clear();
-    /*
-    for (auto p : geometries) {
-        cout << p.second->toString();
-    }
-    */
 }
 
 Translator::AutoVectorType Translator::makeGroup(const vector<TranslatorSymmetry*> &generators) {
@@ -547,8 +517,6 @@ Translator::AutoVectorType Translator::makeGroup(const vector<TranslatorSymmetry
     vector<int> identity;
     AutoMapType tmp;
 
-    //
-    //printf("making autogroup, number of generators = %d\n", generators.size());
     identity.resize(tags.size());
     for (int i = 0; i < tags.size(); i++) {
         identity[i] = i;
@@ -581,7 +549,6 @@ Translator::AutoVectorType Translator::makeAutoSet(CubeSem *autoStmt) {
         generators.clear();
         for (string q : p->stringList) {
             auto r = symmetries.find(q);
-            //cout << q << endl;
             if (r == symmetries.end()) {
                 errorList.push_back(new GenericError(p->location, "Unknown symmetry"));
             }
@@ -607,8 +574,6 @@ const vector<int> &Translator::partitionIdentifier(string str) {
         vector<int> parts;
         bool f;
         string str0 = str;
-        //
-        //cout << str << " ->";
         while (!str.empty()) {
             f = false;
             for (int i = 0; i < tags.size(); i++) {
@@ -622,11 +587,9 @@ const vector<int> &Translator::partitionIdentifier(string str) {
             }
             if (!f) {
                 parts.push_back(str[0]);
-                //cout << ' ' << str[0];
                 str.erase(0, 1);
             }
         }
-        //cout << endl;
         p = identifierCache.insert(pair<string, vector<int> >(str0, parts)).first;
     }
     return p->second;
@@ -641,15 +604,11 @@ string Translator::makeIdentifier(string str, const vector<int> &permutation) {
     for (int i = 0; i < parts.size(); i++) {
         if (parts[i] < TAG_CODE_BASE) {
             ret.push_back(parts[i]);
-            //cout << parts[i] << ' ';
         }
         else {
             ret.append(tagList[permutation[parts[i] - TAG_CODE_BASE]]->name);
-            //cout << tagList[permutation[parts[i] - TAG_CODE_BASE]]->name << ' ';
         }
     }
-    //cout << "-> " << ret << endl;
-    //cout << "@ " << str << ' ' << ret << endl;
     return ret;
 }
 
@@ -691,8 +650,6 @@ void Translator::pass1(CubeSem *node) {
         {
             CubeSem *generated = new CubeSem(node->location, CubeSem::semStmtBlock);
             AutoVectorType autoSet = makeAutoSet(node);
-            //
-            //printf("auto expansion at (%d, %d), size of sutoset = %d\n", node->location.line, node->location.column, autoSet.size());
             for (auto p : autoSet) {
                 CubeSem *tmp = autoGenerate(node->child, p.first);
                 generated->childList.push_back(tmp);
@@ -943,6 +900,7 @@ void Translator::processBlockRelationshipStmt() {
     }
     blockEquivalenceStmtList.clear();
 
+    /*
     DisjointSet bandageSet(n);
     for (CubeSem *p : bandageStmtList) {
         for (CubeSem *q : p->childList) {
@@ -976,6 +934,7 @@ void Translator::processBlockRelationshipStmt() {
         }
     }
     bandageStmtList.clear();
+    */
 }
 
 void Translator::processPositionStmt() {
@@ -1471,48 +1430,13 @@ void Translator::generateMessage() {
     }
     else {
         s << tagList.size() << " tags" << endl;
-        /*
-        for (TranslatorTag *tag : tagList) {
-            s << tag->toString();
-        }
-        */
         s << meshObjects.size() << " mesh objects" << endl;
         s << symmetries.size() << " symmetries" << endl;
-        /*
-        for (auto p : symmetries) {
-            s << p.second->toString();
-        }
-        */
         s << geometries.size() << " geometries" << endl;
-        /*
-        for (auto p : geometries) {
-            s << p.second->toString();
-        }
-        */
         s << aliasedBlockList.size() << " blocks (" << blockList.size() << " aliases)" << endl;
-        /*
-        for (TranslatorBlock *block : blockList) {
-            s << block->toString();
-        }
-        */
         s << aliasedPositionList.size() << " positions (" <<  positionList.size() << " aliases)" << endl;
-        /*
-        for (TranslatorPosition *position : positionList) {
-            s << position->toString();
-        }
-        */
         s << operations.size() << " operations" << endl;
-        /*
-        for (auto p : operations) {
-            s << p.second->toString();
-        }
-        */
         s << bindings.size() << " bindings" << endl;
-        /*
-        for (auto p : bindings) {
-            s << p.second->toString();
-        }
-        */
     }
     message = s.str();
 }
@@ -1536,7 +1460,6 @@ Cube *Translator::getCube() {
         }
         cubeBlock->startTransformation = block->transformation;
         cubeBlock->startPosition = positionList[startList[block->id]]->aliasedId;
-        printf("%d %s %d %s\n", block->id, block->name.c_str(), positionList[startList[block->id]]->aliasedId, positionList[positionList[startList[block->id]]->alias]->name.c_str());
         cubeBlock->isSelected = false;
         cube->blocks.push_back(cubeBlock);
     }

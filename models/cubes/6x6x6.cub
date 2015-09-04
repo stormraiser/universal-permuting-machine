@@ -84,41 +84,41 @@ auto (x, y) {
     }
     operation U3' inverse U3;
     
-    translate(0, 0, 31.25)
-        binding U {
-            invoke U;
+    binding U {
+        invoke U;
+        translate(0, 0, 31.25)
             click "selector_6_1_cw.stl";
-        }
-    
-    translate(0, 0, 31.25)
-        binding U' {
-            invoke U';
+    }
+
+    binding U' {
+        invoke U';
+        translate(0, 0, 31.25)
             click "selector_6_1_ccw.stl";
-        }
-    
-    translate(0, 0, 18.75)
-        binding U2 {
-            invoke U2;
+    }
+
+    binding U2 {
+        invoke U2;
+        translate(0, 0, 18.75)
             click "selector_6_2_cw.stl";
-        }
-    
-    translate(0, 0, 18.75)
-        binding U2' {
-            invoke U2';
+    }
+
+    binding U2' {
+        invoke U2';
+        translate(0, 0, 18.75)
             click "selector_6_2_ccw.stl";
-        }
-    
-    translate(0, 0, 6.25)
-        binding U3 {
-            invoke U3;
+    }
+
+    binding U3 {
+        invoke U3;
+        translate(0, 0, 6.25)
             click "selector_6_2_cw.stl";
-        }
-    
-    translate(0, 0, 6.25)
-        binding U3' {
-            invoke U3';
+    }
+
+    binding U3' {
+        invoke U3';
+        translate(0, 0, 6.25)
             click "selector_6_2_ccw.stl";
-        }
+    }
 }
 
 operation dummy;
