@@ -23,10 +23,12 @@ class MainWindow: public QMainWindow{
 
 private:
     Cube *cube;
-    QPushButton *loadButton, *resetButton, *scrambleButton, *displayButton;
+    QPushButton *loadAndRunButton, *resetButton, *scrambleButton, *displayButton;
+    QPushButton *newButton, *loadButton, *saveButton, *runButton;
     QPushButton *newViewButton;
     QSpinBox *scrambleSpin;
     QLabel *scrambleLabel, *commandLabel;
+    QTabWidget *mainTab;
     QLineEdit *commandEdit;
     QTextEdit *commandView;
     QReadWriteLock cubeLock;
@@ -36,8 +38,6 @@ private:
     bool showAnimation;
     DisplayWindow *primaryView;
     map<int, DisplayWindow*> viewWindows;
-    QTextEdit *codeEdit;
-    CubeDescriptionHighlighter *highlighter;
 
     void boardUpdate();
     void boardUpdateGL();
@@ -52,7 +52,8 @@ signals:
     void drawSignal(bool _needSelection);
 
 private slots:
-    void loadFile();
+    void load();
+    void loadAndRun();
     void resetCube();
     void scrambleCube();
     void executeCommand();
@@ -60,4 +61,5 @@ private slots:
     void removeViewWindow(int windowId);
     void createViewWindow();
     void boardRotate(double angle, Eigen::Vector3d axis);
+    void closeTab(int index);
 };

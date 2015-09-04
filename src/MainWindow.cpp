@@ -12,6 +12,7 @@
 #include <QTextStream>
 #include <QScrollBar>
 #include "CommandSem.h"
+#include "CodeEdit.h"
 
 #include <cstdio>
 
@@ -24,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent){
     primaryView = new DisplayWindow(-1, true,
                              Eigen::Affine3d::Identity() * Eigen::AngleAxisd(-2.617993878, Eigen::Vector3d(0, 0, 1)) * Eigen::AngleAxisd(-0.6154797087, Eigen::Vector3d(0, 1, 0)) * Eigen::AngleAxisd(0.7853981634, Eigen::Vector3d(1, 0, 0)),
                              cubeLock);
-    loadButton = new QPushButton("Load model");
+    loadAndRunButton = new QPushButton("Load and run");
     resetButton = new QPushButton("Reset");
     scrambleButton = new QPushButton("Scramble");
     scrambleSpin = new QSpinBox;
@@ -33,18 +34,25 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent){
     commandEdit = new QLineEdit();
     commandView = new QTextEdit();
     newViewButton = new QPushButton("Create new window");
+    newButton = new QPushButton("New");
+    loadButton = new QPushButton("Load");
+    saveButton = new QPushButton("Save");
+    runButton = new QPushButton("Run");
 
-    codeEdit = new QTextEdit;
-    codeEdit->setFontFamily("monospace");
-    highlighter = new CubeDescriptionHighlighter(codeEdit->document());
-
-    QTabWidget *mainTab = new QTabWidget;
+    mainTab = new QTabWidget;
     mainTab->addTab(primaryView, "Player");
-    mainTab->addTab(codeEdit, "Code");
+    //mainTab->addTab(codeEdit, "Code");
+    mainTab->setMovable(true);
+    mainTab->setTabsClosable(true);
 
-    QHBoxLayout *loadLayout = new QHBoxLayout;
-    loadLayout->addWidget(loadButton);
-    loadLayout->addWidget(newViewButton);
+    QHBoxLayout *fileLayout1 = new QHBoxLayout;
+    fileLayout1->addWidget(loadAndRunButton);
+    fileLayout1->addWidget(newViewButton);
+    QHBoxLayout *fileLayout2 = new QHBoxLayout;
+    fileLayout2->addWidget(newButton);
+    fileLayout2->addWidget(loadButton);
+    fileLayout2->addWidget(saveButton);
+    fileLayout2->addWidget(runButton);
     QHBoxLayout *scrambleLayout = new QHBoxLayout;
     scrambleLayout->addWidget(scrambleLabel);
     scrambleLayout->addWidget(scrambleSpin);
@@ -57,11 +65,11 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent){
     commandLayout->addWidget(commandEdit);
     commandLayout->setStretch(1, 10);
     QVBoxLayout *layoutR = new QVBoxLayout;
-    layoutR->addLayout(loadLayout);
+    layoutR->addLayout(fileLayout1);
+    layoutR->addLayout(fileLayout2);
     layoutR->addLayout(scrambleLayout);
-    layoutR->addLayout(commandLayout);
     layoutR->addWidget(commandView);
-    layoutR->setStretch(2, 10);
+    layoutR->addLayout(commandLayout);
     QWidget *widgetR = new QWidget;
     widgetR->setLayout(layoutR);
     widgetR->setMaximumWidth(350);
@@ -88,18 +96,20 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent){
     resize(900, 600);
     setWindowTitle("StormRaiser's Universal Permuting Machine");
 
-    connect(loadButton, SIGNAL(clicked()), this, SLOT(loadFile()));
+    connect(loadAndRunButton, SIGNAL(clicked()), this, SLOT(loadAndRun()));
+    connect(loadButton, SIGNAL(clicked()), this, SLOT(load()));
     connect(resetButton, SIGNAL(clicked()), this, SLOT(resetCube()));
     connect(scrambleButton, SIGNAL(clicked()), this, SLOT(scrambleCube()));
     connect(commandEdit, SIGNAL(returnPressed()), this, SLOT(executeCommand()));
     connect(primaryView->getBoard(), SIGNAL(clicked()), this, SLOT(operateCube()));
     connect(primaryView->getBoard(), SIGNAL(rotated(double, Eigen::Vector3d)), this, SLOT(boardRotate(double, Eigen::Vector3d)));
     connect(newViewButton, SIGNAL(clicked()), this, SLOT(createViewWindow()));
+    connect(mainTab, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
 }
 
-void MainWindow::loadFile(){
+void MainWindow::loadAndRun() {
     bool f;
-    QString str = QFileDialog::getOpenFileName(this, "Load cube model", QDir::current().absolutePath(), "Cube Descriptors (*.cub)");
+    QString str = QFileDialog::getOpenFileName(this, "Load cube descriptor", QDir::current().absolutePath(), "Cube Descriptors (*.cub)");
     if (!str.isEmpty()){
         Translator *translator = new Translator();
         QFileInfo info = QFileInfo(str);
@@ -109,11 +119,6 @@ void MainWindow::loadFile(){
             commandView->setTextColor(QColor(0, 128, 0));
             commandView->append(QString(translator->getMessage().c_str()));
             commandView->verticalScrollBar()->setValue(commandView->verticalScrollBar()->maximum());
-            codeEdit->setWindowTitle(info.fileName());
-            QFile file(str);
-            file.open(QFile::ReadOnly);
-            QTextStream stream(&file);
-            codeEdit->setText(stream.readAll());
         }
         else {
             commandView->setTextColor(QColor(224, 0, 0));
@@ -121,6 +126,22 @@ void MainWindow::loadFile(){
             commandView->verticalScrollBar()->setValue(commandView->verticalScrollBar()->maximum());
         }
         delete translator;
+    }
+}
+
+void MainWindow::load() {
+    CodeEdit *codeEdit = new CodeEdit;
+    QString str = QFileDialog::getOpenFileName(this, "Load cube descriptor", QDir::current().absolutePath(), "Cube Descriptors (*.cub)");
+    if (codeEdit->load(str)) {
+        QFileInfo info = QFileInfo(str);
+        int index = mainTab->addTab(codeEdit, info.fileName());
+        mainTab->setCurrentIndex(index);
+    }
+    else {
+        delete codeEdit;
+        commandView->setTextColor(QColor(224, 0, 0));
+        commandView->append(QString("Failed to load file %1").arg(str));
+        commandView->verticalScrollBar()->setValue(commandView->verticalScrollBar()->maximum());
     }
 }
 
@@ -283,4 +304,13 @@ void MainWindow::setCube(Cube *_cube) {
     }
     _cube->reset();
     boardUpdate();
+}
+
+void MainWindow::closeTab(int index) {
+    if (mainTab->widget(index) == primaryView) {
+        return;
+    }
+    else {
+        CodeEdit *codeEdit = dynamic_cast<CodeEdit*> mainTab->widget(index);
+    }
 }

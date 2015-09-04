@@ -26,6 +26,7 @@ unix {
 HEADERS += ../src/Cube.h \
            ../src/CubeSem.h \
            ../src/CommandSem.h \
+           ../src/CodeEdit.h \
            ../src/CubeDescriptionHighlighter.h \
            ../src/DisjointSet.h \
            ../src/DisplayBoard.h \
@@ -40,6 +41,7 @@ LEXSOURCES += ../src/cube.l ../src/command.l
 YACCSOURCES += ../src/cube.y ../src/command.y
 SOURCES += ../src/Cube.cpp \
            ../src/CubeDescriptionHighlighter.cpp \
+           ../src/CodeEdit.cpp \
            ../src/Objects.cpp \
            ../src/DisplayBoard.cpp \
            ../src/DisplayWindow.cpp \
