@@ -28,7 +28,7 @@ DisplayWindow::DisplayWindow(int _windowId, bool _isPrimary, Eigen::Affine3d _pr
         controlLayout->addWidget(syncCheck);
         controlLayout->addWidget(resetButton);
     }
-    setWindowTitle(QString("display window #%1").arg(windowId));
+    setWindowTitle(QString("Player"));
 
     controlLayout->addStretch(1);
     QVBoxLayout *mainLayout = new QVBoxLayout;

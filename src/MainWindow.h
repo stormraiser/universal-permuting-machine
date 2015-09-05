@@ -13,7 +13,7 @@
 #include <Eigen/Eigen>
 #include "Cube.h"
 #include "DisplayWindow.h"
-#include "CubeDescriptionHighlighter.h"
+#include "CodeEdit.h"
 
 using namespace std;
 
@@ -23,8 +23,8 @@ class MainWindow: public QMainWindow{
 
 private:
     Cube *cube;
-    QPushButton *loadAndRunButton, *resetButton, *scrambleButton, *displayButton;
-    QPushButton *newButton, *loadButton, *saveButton, *runButton;
+    QPushButton *loadAndPlayButton, *resetButton, *scrambleButton, *displayButton;
+    QPushButton *newButton, *loadButton, *saveButton, *playButton;
     QPushButton *newViewButton;
     QSpinBox *scrambleSpin;
     QLabel *scrambleLabel, *commandLabel;
@@ -35,15 +35,22 @@ private:
     QMutex operationLock;
     int animationTime;
     int viewWindowCount;
+    int codeTabCount;
+    int newCodeCount;
     bool showAnimation;
     DisplayWindow *primaryView;
     map<int, DisplayWindow*> viewWindows;
+    map<int, CodeEdit*> codeTabs;
 
     void boardUpdate();
     void boardUpdateGL();
     void commandScrambleCube();
     void commandResetCube();
     void setCube(Cube *_cube);
+    void loadAndPlay(QString filename);
+
+protected:
+    void closeEvent(QCloseEvent *event);
 
 public:
     MainWindow(QWidget *parent = 0);
@@ -53,7 +60,10 @@ signals:
 
 private slots:
     void load();
-    void loadAndRun();
+    void save();
+    void newCodeTab();
+    void play();
+    void loadAndPlay();
     void resetCube();
     void scrambleCube();
     void executeCommand();
@@ -62,4 +72,5 @@ private slots:
     void createViewWindow();
     void boardRotate(double angle, Eigen::Vector3d axis);
     void closeTab(int index);
+    void changeCodeTabTitle(int id, QString title);
 };

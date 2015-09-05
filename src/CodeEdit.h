@@ -10,14 +10,24 @@ class CodeEdit: public QTextEdit {
 private:
     bool modified;
     bool unsavedNewFile;
-    QString filename;
+    QString m_filename;
+    QString m_title;
     CubeDescriptionHighlighter *highlighter;
+    int m_id;
 
 public:
-    CodeEdit(QWidget *parent = 0);
+    CodeEdit(int _id, int _newId = 0, QWidget *parent = 0);
     ~CodeEdit();
     bool load(QString _filename);
     bool save();
-    bool save(QString _filename);
-    bool isUnsavedNewFile();
+    bool tryClose();
+    int id();
+    QString title();
+    QString filename();
+
+signals:
+    void titleChanged(int _id, QString title);
+
+private slots:
+    void checkModified();
 };
