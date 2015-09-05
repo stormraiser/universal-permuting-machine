@@ -26,6 +26,7 @@ This is my first project intended to be made publicly available. I did not have 
 To build this program on Linux, just make sure you have Qt5, flex and bison installed. If you have Eigen, add its path to the Qt project file `src/strcube.pro`. If you don't have it, download it and place the `Eigen` folder under `src` directory. Now you can build these code by entering `build` directory and execute
 
 `qmake strcube.pro`
+
 `make`
 
 On windows things get tricky. If you want to use GNU toolchain which is our case, you should use MinGW since Qt has MinGW version only which I think is not compatible with Cygwin. But the bison program provided by MinGW is outdated, while the one provided by Cygwin is up to date. So you have to use gcc from MinGW but flex/bison from Cygwin. To reduce confusion, just use the 32-bit MinGW package provided by Cygwin.
@@ -33,6 +34,7 @@ On windows things get tricky. If you want to use GNU toolchain which is our case
 Again you need Qt5 and Eigen. You may also need to change the gcc executable names in `src/strcube.pro`. When everything is ready, enter build directory and execute
 
 `qmake strcube.pro`
+
 `make`
 
 ## How To Use
@@ -43,6 +45,7 @@ The UI is still very simple. The display area to the left is where the simulated
 "Load" loads a cube description file and displays it in a code tab where you may edit the file. "New" cheates a new empty code tab, and "Save" saves the file in the current code tab. Cube description files loaded this way will not be parsed and simulated automaticly, you need to click "Play" to run the simulation.
 "Scramble" scrambles the cube, and "Reset" resets it.
 Below the set of buttons is the terminal. Most informations will be displayed here. You may type in commands to control the puzzle.
+
 ### The Language
 As mentioned above, you can build your own puzzles. For this purpose we have designed a cube description language. It functions like a markup language, but with a syntax similar to a general purpose imperative language. I could have used xml, but these cube description files are intended to be concise and primarily written by human, and you won't want to bother with writing those xml tags, which might way exceed the actual useful part in terms of length.
 
@@ -54,6 +57,7 @@ The language design has not been fully implemented yet, but it sould suffice to 
 *	Multiple display windows
 *	Additional display modes
 *	New language semantics implemented: bandage
+
 ###alpha 0.1 - 2015.8.29
 *	Initial release
 *	Parser for full language specification
