@@ -13,10 +13,55 @@ bool Cube::check(const vector<int> &positionPermutation) {
 }
 
 void Cube::checkBindingValidity() {
+    vector<int> currentPositions;
+    currentPositions.resize(blocks.size());
     for (TranslatorBinding *binding : bindings) {
         binding->validIndex = -1;
+        for (int i = 0; i < blocks.size(); i++) {
+            currentPositions[i] = blocks[i]->currentPosition;
+        }
         for (int i = 0; i < binding->invokeList.size(); i++) {
+            bool f = true;
+            for (vector<int> vec : binding->invokeList[i]) {
+                for (int j : vec) {
+                    for (vector<int> vec2 : bandages) {
+                        for (int k = 1; k < vec2.size(); k++) {
+                            if (operations[j]->transformationId[currentPositions[vec2[0]]] != operations[j]->transformationId[currentPositions[vec2[k]]]) {
+                                f = false;
+                                break;
+                            }
+                        }
+                        if (!f) {
+                            break;
+                        }
+                    }
+                    if (!f) {
+                        break;
+                    }
+                    for (int k = 0; k < blocks.size(); k++) {
+                        if (operations[j]->positionPermutation[currentPositions[k]] == -2) {
+                            f = false;
+                            break;
+                        }
+                        else {
+                            currentPositions[k] = operations[j]->positionPermutation[currentPositions[k]];
+                        }
+                    }
+                    if (!f) {
+                        break;
+                    }
+                }
+                if (!f) {
+                    break;
+                }
+            }
+            /*
             if (check(binding->positionPermutations[i])) {
+                binding->validIndex = i;
+                break;
+            }
+            */
+            if (f) {
                 binding->validIndex = i;
                 break;
             }

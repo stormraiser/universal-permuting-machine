@@ -14,6 +14,7 @@ struct Cube {
     vector<TranslatorOperation*> operations;
     vector<TranslatorBinding*> bindings;
     map<string, TranslatorBinding*> bindingMap;
+    vector< vector<int> > bandages;
 
     int activeBinding, uintBits;
     GLint redBits, greenBits, blueBits;

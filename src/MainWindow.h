@@ -51,6 +51,7 @@ private:
 
 protected:
     void closeEvent(QCloseEvent *event);
+    void keyPressEvent(QKeyEvent *event);
 
 public:
     MainWindow(QWidget *parent = 0);

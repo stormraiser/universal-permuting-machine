@@ -383,3 +383,31 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     }
     event->accept();
 }
+
+void MainWindow::keyPressEvent(QKeyEvent *event) {
+    if (event->modifiers() == Qt::ControlModifier) {
+        if (event->key() == Qt::Key_N) {
+            newCodeTab();
+            event->accept();
+        }
+        else if (event->key() == Qt::Key_S) {
+            save();
+            event->accept();
+        }
+        else if (event->key() == Qt::Key_W) {
+            closeTab(mainTab->currentIndex());
+            event->accept();
+        }
+        else if (event->key() == Qt::Key_O) {
+            load();
+            event->accept();
+        }
+        else if (event->key() == Qt::Key_R) {
+            resetCube();
+            event->accept();
+        }
+    }
+    if (!event->isAccepted()) {
+        QMainWindow::keyPressEvent(event);
+    }
+}

@@ -451,7 +451,10 @@ MeshObject *Translator::loadMeshObject(string filename) {
     auto p = meshObjects.find(filename);
     if (p == meshObjects.end()) {
         MeshObject *meshObject = new MeshObject;
-        meshObject->load(string(m_path).append(filename));
+        if (!meshObject->load(string(m_path).append(filename))) {
+            delete meshObject;
+            return 0;
+        }
         meshObjects.insert(pair<string, MeshObject*>(filename, meshObject));
         return meshObject;
     }
@@ -1562,5 +1565,6 @@ Cube *Translator::getCube() {
         k++;
     }
     bindings.clear();
+    cube->bandages = bandageList;
     return cube;
 }
