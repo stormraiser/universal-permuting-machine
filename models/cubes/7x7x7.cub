@@ -41,7 +41,7 @@ geometry corner {
 
 auto (x, y) {
     translate(0, 0, 33)
-        block U/R = center(body, U);
+        block U = center(body, U);
     translate(0, 11, 33)
         block UR3 = center(body, U);
     translate(0, 22, 33)
@@ -62,12 +62,13 @@ auto (x, y) {
         block URF2 = edge(body, U, R);
     translate(33, 33, 33)
         block URF = corner(body, U, R, F);
-    block alias (U/R, U/F), (UR, RU), (URF, RFU);
-    position U/R, UR3, UR2, UR, UR3F3, UR2F3, URF3, UR3F2, UR2F2, URF2, UR3F, UR2F, URF;
+    block alias (UR, RU), (URF, RFU);
+    position U, UR3, UR2, UR, UR3F3, UR2F3, URF3, UR3F2, UR2F2, URF2, UR3F, UR2F, URF;
     
     operation U {
         axisangle(0, 0, 1, -90) {
-            shift (U/R, U/F), (UR3, UF3), (UR2, UF2), (UR, UF);
+            cycle (U);
+            shift (UR3, UF3), (UR2, UF2), (UR, UF);
             shift (UR3F3, UF3L3), (UR2F3, UF2L3), (URF3, UFL3);
             shift (UR3F2, UF3L2), (UR2F2, UF2L2), (URF2, UFL2);
             shift (UR3F, UF3L), (UR2F, UF2L), (URF, UFL);
@@ -95,7 +96,7 @@ auto (x, y) {
     
     operation Um {
         axisangle(0, 0, 1, -90) {
-            shift (R/U, F/U), (R/B, F/R), (R/D, F/D), (R/F, F/L);
+            shift (R, F);
             shift (RF3, FL3), (RF2, FL2), (RF, FL);
             shift (FR, LF), (FR2, LF2), (FR3, LF3);
         }

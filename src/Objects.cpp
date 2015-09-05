@@ -228,10 +228,12 @@ void CubeBlock::reset() {
 }
 
 void CubeBlock::draw() {
-    glPushMatrix();
-    glMultMatrixd(drawTransformation.data());
-    geometry->draw(colorList, isSelected);
-    glPopMatrix();
+    if (geometry != 0) {
+        glPushMatrix();
+        glMultMatrixd(drawTransformation.data());
+        geometry->draw(colorList, isSelected);
+        glPopMatrix();
+    }
 }
 
 void TranslatorBinding::draw() {

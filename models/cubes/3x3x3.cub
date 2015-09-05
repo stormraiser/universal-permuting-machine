@@ -41,23 +41,25 @@ geometry corner {
 
 auto (x, y) {
     translate(0, 0, 19)
-        block U/R = center(body, U);
+        block U = center(body, U);
     translate(0, 19, 19)
         block UR = edge(body, U, R);
     translate(19, 19, 19)
         block URF = corner(body, U, R, F);
-    block alias (U/R, U/F), (UR, RU), (URF, RFU);
-    position U/R, UR, URF;
+    block alias (UR, RU), (URF, RFU);
+    position U, UR, URF;
     
     operation U {
-        axisangle(0, 0, 1, -90)
-            shift (U/R, U/F), (UR, UF), (RU, FU), (URF, UFL), (RFU, FLU), (FUR, LUF);
+        axisangle(0, 0, 1, -90) {
+            cycle (U);
+            shift (UR, UF), (RU, FU), (URF, UFL), (RFU, FLU), (FUR, LUF);
+        }
     }
     operation U' inverse U;
     
     operation Um {
         axisangle(0, 0, 1, -90)
-            shift (R/U, F/U), (R/B, F/R), (R/D, F/D), (R/F, F/L), (RF, FL), (FR, LF);
+            shift (R, F), (RF, FL), (FR, LF);
     }
     
     binding U {

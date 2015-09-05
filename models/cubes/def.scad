@@ -18,6 +18,13 @@ module _block(size) {
     }
 }
 
+module _multi_block(size, nx, ny, nz) {
+    minkowski() {
+        cube([size * nx - round_radius * 2, size * ny - round_radius * 2, size * nz - round_radius * 2], center = true);
+        sphere(r = round_radius, $fn = 24);
+    }
+}
+
 module _selector_0(size) {
     cube([size - 0.2, size - 0.2, size - 0.2], center = true);
 }
@@ -25,6 +32,13 @@ module _selector_0(size) {
 module _sticker(size) {
     minkowski() {
         cube([size - sticker_margin * 2, size - sticker_margin * 2, 0.1], center = true);
+        cylinder(r = sticker_round_radius, h = 0.1, $fn = 24);
+    }
+}
+
+module _multi_sticker(size, nx, ny) {
+    minkowski() {
+        cube([size * nx - sticker_margin * 2, size * ny - sticker_margin * 2, 0.1], center = true);
         cylinder(r = sticker_round_radius, h = 0.1, $fn = 24);
     }
 }

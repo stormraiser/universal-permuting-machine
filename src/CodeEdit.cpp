@@ -39,6 +39,9 @@ bool CodeEdit::load(QString _filename) {
 }
 
 bool CodeEdit::save() {
+    if (!modified) {
+        return true;
+    }
     if (unsavedNewFile) {
         m_filename = QFileDialog::getSaveFileName(this, "Save cube descriptor", QDir::current().absolutePath(), "Cube Descriptors (*.cub)");
         m_title = QFileInfo(m_filename).fileName();

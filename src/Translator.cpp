@@ -52,6 +52,7 @@ Cube *Translator::translate(string path, string filename) {
     pass1(tree);
     processBlockStmt();
     processBlockRelationshipStmt();
+    processBandageStmt();
     processPositionStmt();
     processPositionRelationshipStmt();
     processOperationStmt();
@@ -747,26 +748,27 @@ void Translator::processBlockStmt() {
                     }
                     else {
                         TranslatorGeometry *geometry = s->second;
-                        CubeSem *tuple = q->child;
-                        if (geometry->meshList.size() != tuple->stringList.size()) {
+                        CubeSem *tagTuple = q->child;
+                        if (geometry->meshList.size() != tagTuple->stringList.size()) {
                             errorList.push_back(new GenericError(q->location, "Number of tags specified when calling a geometry does not match that in the geometry definition"));
                         }
                         else {
                             block = new TranslatorBlock;
                             block->name = q->string1;
                             block->geometry = geometry;
-                            bool f = true;
-                            for (int i = 0; i < tuple->stringList.size(); i++) {
-                                auto u = tags.find(tuple->stringList[i]);
+                            for (int i = 0; i < tagTuple->stringList.size(); i++) {
+                                auto u = tags.find(tagTuple->stringList[i]);
                                 if (u == tags.end()) {
                                     errorList.push_back(new GenericError(q->location, "Unknown tag"));
-                                    f = false;
                                     delete block;
                                     block = 0;
                                     break;
                                 }
                                 else if (!u->second->isColored) {
                                     errorList.push_back(new GenericError(q->location, "Tag does not have a color"));
+                                    delete block;
+                                    block = 0;
+                                    break;
                                 }
                                 else {
                                     block->tagList.push_back(u->second->id);
@@ -876,7 +878,7 @@ void Translator::processBlockRelationshipStmt() {
                     errorList.push_back(new GenericError(q->location, "Unknown block"));
                 }
                 else {
-                    tmpBlockId.push_back(blockList[s->second->alias]->aliasedId);
+                    tmpBlockId.push_back(s->second->aliasedId);
                 }
             }
             for (int i = 1; i < tmpBlockId.size(); i++) {
@@ -899,19 +901,28 @@ void Translator::processBlockRelationshipStmt() {
         }
     }
     blockEquivalenceStmtList.clear();
+}
 
-    /*
-    DisjointSet bandageSet(n);
+void Translator::processBandageStmt() {
+    vector<int> tmpBlockId;
+    DisjointSet bandageSet(aliasedBlockList.size());
     for (CubeSem *p : bandageStmtList) {
         for (CubeSem *q : p->childList) {
+            CubeSem *blockTuple;
+            if (q->type == CubeSem::semTuple) {
+                blockTuple = q;
+            }
+            else {
+                blockTuple = q->childList[0];
+            }
             tmpBlockId.clear();
-            for (string r : q->stringList) {
+            for (string r : blockTuple->stringList) {
                 auto s = blocks.find(r);
                 if (s == blocks.end()) {
-                    errorList.push_back(new GenericError(q->location, "Unknown block"));
+                    errorList.push_back(new GenericError(blockTuple->location, "Unknown block"));
                 }
                 else {
-                    tmpBlockId.push_back(blockList[s->second->alias]->aliasedId);
+                    tmpBlockId.push_back(s->second->aliasedId);
                 }
             }
             for (int i = 1; i < tmpBlockId.size(); i++) {
@@ -919,11 +930,11 @@ void Translator::processBlockRelationshipStmt() {
             }
         }
     }
-    m = 0;
-    for (int i = 0; i < n; i++) {
+    int m = 0;
+    for (int i = 0; i < aliasedBlockList.size(); i++) {
         if (bandageSet.find(i) == i) {
             vector<int> tmpBandage;
-            for (int j = 0; j < n; j++) {
+            for (int j = 0; j < aliasedBlockList.size(); j++) {
                 if (bandageSet.find(j) == i) {
                     aliasedBlockList[j]->bandageGroup = m;
                     tmpBandage.push_back(j);
@@ -933,8 +944,79 @@ void Translator::processBlockRelationshipStmt() {
             m++;
         }
     }
+
+    vector<TranslatorBlock*> bandageBlocks;
+    bandageBlocks.assign(aliasedBlockList.size(), 0);
+
+    for (CubeSem *p : bandageStmtList) {
+        for (CubeSem *q : p->childList) {
+            if (q->type == CubeSem::semBandageItem) {
+                auto g = geometries.find(q->string1);
+                TranslatorBlock *block = 0;
+                if (g == geometries.end()) {
+                    errorList.push_back(new GenericError(q->location, "Unknown geometry"));
+                }
+                else {
+                    TranslatorGeometry *geometry = g->second;
+                    CubeSem *tagTuple = q->childList[1];
+                    if (geometry->meshList.size() != tagTuple->stringList.size()) {
+                        errorList.push_back(new GenericError(q->location, "Number of tags specified when calling a geometry does not match that in the geometry definition"));
+                    }
+                    else {
+                        block = new TranslatorBlock;
+                        block->geometry = geometry;
+                        for (int i = 0; i < tagTuple->stringList.size(); i++) {
+                            auto u = tags.find(tagTuple->stringList[i]);
+                            if (u == tags.end()) {
+                                errorList.push_back(new GenericError(q->location, "Unknown tag"));
+                                delete block;
+                                block = 0;
+                                break;
+                            }
+                            else if (!u->second->isColored) {
+                                errorList.push_back(new GenericError(q->location, "Tag does not have a color"));
+                                delete block;
+                                block = 0;
+                                break;
+                            }
+                            else {
+                                block->tagList.push_back(u->second->id);
+                            }
+                        }
+                    }
+                }
+                if (block != 0) {
+                    block->transformation = p->transformation;
+                    for (string r : q->childList[0]->stringList) {
+                        auto s = blocks.find(r);
+                        if (s != blocks.end()) {
+                            bandageBlocks[s->second->aliasedId] = block;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    for (int i = 0; i < m; i++) {
+        for (int j : bandageList[i]) {
+            if (bandageBlocks[j] != 0) {
+                for (int k : bandageList[i]) {
+                    aliasedBlockList[k]->geometry = 0;
+                }
+                aliasedBlockList[j]->transformation = bandageBlocks[j]->transformation;
+                aliasedBlockList[j]->geometry = bandageBlocks[j]->geometry;
+                aliasedBlockList[j]->tagList = bandageBlocks[j]->tagList;
+                break;
+            }
+        }
+    }
+    for (TranslatorBlock *block : bandageBlocks) {
+        if (block != 0) {
+            delete block;
+        }
+    }
     bandageStmtList.clear();
-    */
 }
 
 void Translator::processPositionStmt() {
@@ -1017,7 +1099,7 @@ void Translator::processPositionRelationshipStmt() {
             for (string r : q->stringList) {
                 auto s = positions.find(r);
                 if (s == positions.end()) {
-                    errorList.push_back(new GenericError(q->location, "Unknown block"));
+                    errorList.push_back(new GenericError(q->location, "Unknown position"));
                 }
                 else {
                     tmpPositionId.push_back(positionList[s->second->alias]->aliasedId);
@@ -1349,10 +1431,9 @@ void Translator::processStartStmt() {
             if ((r != blocks.end()) && (s != positions.end())) {
                 int a = r->second->id;
                 int b = s->second->id;
-                if ((startList[a] != -1) && (startList[a] != b)) {
-                    errorList.push_back(new GenericError(q->location, "Conflicting start positions"));
+                if (startList[a] == -1) {
+                    startList[a] = b;
                 }
-                startList[a] = b;
             }
         }
     }

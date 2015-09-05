@@ -41,7 +41,7 @@ geometry corner {
 
 auto (x, y) {
     translate(0, 0, 28)
-        block U/R = center(body, U);
+        block U = center(body, U);
     translate(0, 14, 28)
         block UR2 = center(body, U);
     translate(0, 28, 28)
@@ -52,12 +52,13 @@ auto (x, y) {
         block URF2 = edge(body, U, R);
     translate(28, 28, 28)
         block URF = corner(body, U, R, F);
-    block alias (U/R, U/F), (UR, RU), (URF, RFU);
-    position U/R, UR2, UR, UR2F2, URF2, UR2F, URF;
+    block alias (UR, RU), (URF, RFU);
+    position U, UR2, UR, UR2F2, URF2, UR2F, URF;
     
     operation U {
         axisangle(0, 0, 1, -90) {
-            shift (U/R, U/F), (UR2, UF2), (UR, UF), (RU, FU);
+            cycle (U);
+            shift (UR2, UF2), (UR, UF), (RU, FU);
             shift (UR2F2, UF2L2), (URF2, UFL2), (UR2F, UF2L), (URF, UFL);
             shift (RF2U, FL2U), (RFU, FLU), (FUR, LUF), (FUR2, LUF2);
         }
@@ -72,7 +73,7 @@ auto (x, y) {
     
     operation Um {
         axisangle(0, 0, 1, -90) {
-            shift (R/U, F/U), (R/B, F/R), (R/D, F/D), (R/F, F/L);
+            shift (R, F);
             shift (RF2, FL2), (RF, FL), (FR, LF), (FR2, LF2);
         }
     }

@@ -246,19 +246,21 @@ void MainWindow::operateCube() {
         //cubeLock.lockForWrite();
         int n = cube->prepareAnimation();
         //cubeLock.unlock();
-        boardUpdateGL();
-        int k = time.elapsed();
-        while (k < n * animationTime) {
-            //cubeLock.lockForWrite();
-            cube->doAnimation(1.0 * k / animationTime);
-            //cubeLock.unlock();
+        if (n != -1) {
             boardUpdateGL();
-            k = time.elapsed();
+            int k = time.elapsed();
+            while (k < n * animationTime) {
+                //cubeLock.lockForWrite();
+                cube->doAnimation(1.0 * k / animationTime);
+                //cubeLock.unlock();
+                boardUpdateGL();
+                k = time.elapsed();
+            }
+            //cubeLock.lockForWrite();
+            cube->doneAnimation();
+            //cubeLock.unlock();
+            boardUpdate();
         }
-        //cubeLock.lockForWrite();
-        cube->doneAnimation();
-        //cubeLock.unlock();
-        boardUpdate();
     }
     else {
         //cubeLock.lockForWrite();

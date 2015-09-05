@@ -90,6 +90,7 @@ private:
     void pass1(CubeSem *node);
     void processBlockStmt();
     void processBlockRelationshipStmt();
+    void processBandageStmt();
     void processPositionStmt();
     void processPositionRelationshipStmt();
     void operationPass(CubeSem *node, TranslatorOperation *operation);

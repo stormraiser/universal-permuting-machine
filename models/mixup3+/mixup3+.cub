@@ -46,9 +46,9 @@ geometry corner {
 }
 
 auto (x, y) {
-    block U/R = center (body, U), UR = edge (body, U, R);
+    block U = center (body, U), UR = edge (body, U, R);
     block UR2 = intermediate (body, U), URF = corner (body, U, R, F);
-    block alias (U/R, U/F, U/L, U/B), (UR, RU), (URF, RFU, FUR);
+    block alias (UR, RU), (URF, RFU, FUR);
     position U/R, UR, UR+1, UR2, UR2+1, URF;
     
     operation U {
@@ -66,6 +66,8 @@ auto (x, y) {
             shift (RF2, FR2+1, FL2), (RF2+1, FR2, FL2+1);
         }
     }
+
+    start U = U/R;
     
     binding U {
         invoke U;
