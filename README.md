@@ -1,6 +1,6 @@
 # StormRaiser's Universal Permuting Machine
 
-Version: alpha 0.1
+Version: alpha 0.2
 
 ## What is this
 In a word, this is a multifunctional digital Rubik's Cube, a program that is
@@ -26,7 +26,6 @@ This is my first project intended to be made publicly available. I did not have 
 To build this program on Linux, just make sure you have Qt5, flex and bison installed. If you have Eigen, add its path to the Qt project file `src/strcube.pro`. If you don't have it, download it and place the `Eigen` folder under `src` directory. Now you can build these code by entering `build` directory and execute
 
 `qmake strcube.pro`
-
 `make`
 
 On windows things get tricky. If you want to use GNU toolchain which is our case, you should use MinGW since Qt has MinGW version only which I think is not compatible with Cygwin. But the bison program provided by MinGW is outdated, while the one provided by Cygwin is up to date. So you have to use gcc from MinGW but flex/bison from Cygwin. To reduce confusion, just use the 32-bit MinGW package provided by Cygwin.
@@ -34,12 +33,28 @@ On windows things get tricky. If you want to use GNU toolchain which is our case
 Again you need Qt5 and Eigen. You may also need to change the gcc executable names in `src/strcube.pro`. When everything is ready, enter build directory and execute
 
 `qmake strcube.pro`
-
 `make`
 
 ## How To Use
-The UI is still very simple and is pretty much self-explainatory. Click "Load model" to load a cube description file, identified by the extension `.cub`. They are really just plain text files. When a puzzle is loaded, left click to operate on the puzzle, right click and drag to rotate view, and scroll up/down to zoom. "Change display" cycles the display mode. Currently we have stereoscopic 3D and hologram modes. "Scramble" to scramble. "Reset" to reset. The command line interface below is still being worked on. It somehow works but will not be explaned here.
+### The UI
+The UI is still very simple. The display area to the left is where the simulated puzzle is shown and where you interact with it. Left click to operate on the puzzle, right click and drag to rotate, scroll mouse wheel to zoom. The drop box in the lower-left corner is used to switch between display modes. All other functions are accessed through the control panel to the right of the window.
+"Load and play" loads a cube description file and runs the simulation in the display area to the left.
+"New display" creates an additional display window. These windows are controlled independently. They could be set to syncronize rotation with the display area in the main window.
+"Load" loads a cube description file and displays it in a code tab where you may edit the file. "New" cheates a new empty code tab, and "Save" saves the file in the current code tab. Cube description files loaded this way will not be parsed and simulated automaticly, you need to click "Play" to run the simulation.
+"Scramble" scrambles the cube, and "Reset" resets it.
+Below the set of buttons is the terminal. Most informations will be displayed here. You may type in commands to control the puzzle.
+### The Language
+As mentioned above, you can build your own puzzles. For this purpose we have designed a cube description language. It functions like a markup language, but with a syntax similar to a general purpose imperative language. I could have used xml, but these cube description files are intended to be concise and primarily written by human, and you won't want to bother with writing those xml tags, which might way exceed the actual useful part in terms of length.
 
-As mentioned above, you can build your own puzzles. For this purpose we have designed a cube description language. It functions like a markup language, but with a syntax similar to a general purpose imperative language. I could have used xml. But I want these cube description files to be concise and primarily written by human. You won't want to bother with writing those xml tags, which might way exceed the actual useful part in terms of length.
+The language design has not been fully implemented yet, but it sould suffice to write a simple puzzle like the Rubik's Cube. The specification of the lange would not be long, but to be able to use it you really have to understand some ideas behind the design, and that might need some tens of pages of documentation with carefully designed examples. I'm not planning to write such a documentation before a full release of this software since I would probably be the only one who will actually write these cube specification files. If you want to see how it works now, just open one `.cub` file and try to read it. If your programming skill enables you to build these code, the syntax should seem straight forward. And if you play Rubik's Cube, you could guess some of the semantics.
 
-The design of the syntax and the parser is largely done. But some subtleties in the semantics are yet to be resolved. The specification of the lange would not be long, but to be able to use it you really have to understand some ideas behind the design, and that might need some tens of pages of documentation with carefully designed examples. We still don't have such a documentation yet. So If you want to see how it works now, just open one `.cub` file and try to read it. If your programming skill enables you to build these code, the syntax should seem straight forward. And if you play Rubik's Cube, you could guess some of the semantics.
+## Version Histroy
+###alpha 0.2 - 2015.9.6
+*	Code editing capabilities, with syntax highlighting
+*	Multiple display windows
+*	Additional display modes
+*	New language semantics implemented: bandage
+###alpha 0.1 - 2015.8.29
+*	Initial release
+*	Parser for full language specification
+*	Implemented basic language semantics: tag, symmetry, geometry, transformations, auto, block, block alias, position, position alias, operation, binding
