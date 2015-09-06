@@ -106,9 +106,6 @@ int DisplayBoard::viewCount() {
     }
 }
 
-void DisplayBoard::resizeGL(int width, int height){
-}
-
 void DisplayBoard::setCrop(int x, int y, int width, int height, bool invertX, bool invertY) {
     double s = trackBallRadius / zoom;
     double w, h;
@@ -298,7 +295,7 @@ void DisplayBoard::setView(int index){
     }
 }
 
-void DisplayBoard::paintGL(){
+void DisplayBoard::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     painter.beginNativePainting();
     glEnable(GL_DEPTH_TEST);
@@ -383,50 +380,8 @@ int DisplayBoard::getClickArea(int x, int y) {
 }
 
 void DisplayBoard::flipMousePosition() {
-    int cy;
-    switch (displayMode) {
-    case dispHolo:
-        {
-            int l = (width() < height() ? width() : height()) / 3;
-            switch (getClickArea(mouseX, mouseY)) {
-            case 0:
-                cy = height() / 2 + l;
-                break;
-            case 1:
-            case 3:
-                cy = height() / 2;
-                break;
-            case 2:
-                cy = height() / 2 - l;
-                break;
-            }
-        }
-        mouseY = cy * 2 - mouseY;
-        break;
-    case dispHoloCross:
-        {
-            int l = (width() < height() ? width() : height()) / 4;
-            switch (getClickArea(mouseX, mouseY)) {
-            case 0:
-            case 1:
-                cy = height() / 2 + l * 3 / 2;
-                break;
-            case 2:
-            case 7:
-                cy = height() / 2 + l / 2;
-                break;
-            case 3:
-            case 6:
-                cy = height() / 2 - l / 2;
-                break;
-            case 4:
-            case 5:
-                cy = height() / 2 - l * 3 / 2;
-                break;
-            }
-        }
-        mouseY = cy * 2 - mouseY;
-        break;
+    if ((displayMode == dispHolo) || (displayMode == dispHoloCross)) {
+        mouseY = height() - mouseY;
     }
 }
 

@@ -6,13 +6,30 @@
 #include <QDir>
 #include <cstdio>
 #include <QMessageBox>
+#include <QFont>
+#include <QtGlobal>
 
 CodeEdit::CodeEdit(int _id, int _newId, QWidget *parent): QTextEdit(parent) {
     m_id = _id;
     modified = false;
     unsavedNewFile = true;
     highlighter = new CubeDescriptionHighlighter(document());
-    setFontFamily("monospace");
+    QFont monospace("");
+    #ifdef Q_OS_WIN
+        monospace = QFont("Courier New");
+    #endif
+    #ifdef Q_OS_OSX
+        monospace = QFont("Courier New");
+    #endif
+    #ifdef Q_OS_LINUX
+        monospace = QFont("Inconsolata");
+    #endif
+    #ifdef Q_OS_UNIX
+        monospace = QFont("Inconsolata");
+    #endif
+    monospace.setStyleHint(QFont::Monospace);
+    monospace.setPointSize(10);
+    setFont(monospace);
     m_filename = m_title = QString("New Descriptor %1").arg(_newId);
     connect(this, SIGNAL(textChanged()), this, SLOT(checkModified()));
 }

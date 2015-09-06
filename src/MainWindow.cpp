@@ -247,13 +247,13 @@ void MainWindow::operateCube() {
         int n = cube->prepareAnimation();
         //cubeLock.unlock();
         if (n != -1) {
-            boardUpdateGL();
+            boardRepaint();
             int k = time.elapsed();
             while (k < n * animationTime) {
                 //cubeLock.lockForWrite();
                 cube->doAnimation(1.0 * k / animationTime);
                 //cubeLock.unlock();
-                boardUpdateGL();
+                boardRepaint();
                 k = time.elapsed();
             }
             //cubeLock.lockForWrite();
@@ -278,10 +278,10 @@ void MainWindow::boardUpdate() {
     }
 }
 
-void MainWindow::boardUpdateGL() {
-    primaryView->getBoard()->updateGL();
+void MainWindow::boardRepaint() {
+    primaryView->getBoard()->repaint();
     for (auto p : viewWindows) {
-        p.second->getBoard()->updateGL();
+        p.second->getBoard()->repaint();
     }
 }
 

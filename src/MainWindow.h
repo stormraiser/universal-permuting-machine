@@ -43,7 +43,7 @@ private:
     map<int, CodeEdit*> codeTabs;
 
     void boardUpdate();
-    void boardUpdateGL();
+    void boardRepaint();
     void commandScrambleCube();
     void commandResetCube();
     void setCube(Cube *_cube);

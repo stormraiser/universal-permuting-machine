@@ -53,12 +53,11 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event);
     void wheelEvent(QWheelEvent *event);
     void keyPressEvent(QKeyEvent *event);
+    void paintEvent(QPaintEvent *event);
 
 public:
     DisplayBoard(bool _isPrimary, Eigen::Affine3d _primaryMatrix, QReadWriteLock &_cubeLock, QGLWidget *shareWidget = 0, QWidget *parent = 0);
     void initializeGL();
-    void paintGL();
-    void resizeGL(int width, int height);
     void setCube(Cube *p_cube);
     void setCrop(int x, int y, int width, int height, bool invertX = false, bool invertY = false);
     void primaryRotate(const Eigen::Affine3d &mat, const Eigen::Affine3d &inv);
