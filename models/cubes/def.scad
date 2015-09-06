@@ -1,3 +1,4 @@
+block_size_2 = 25;
 block_size_3 = 19;
 block_size_4 = 16;
 block_size_5 = 14;
