@@ -13,37 +13,37 @@ symmetry y {
 }
 
 geometry block_1 {
-    model "block_1.stl";
-    model "sticker_1.stl";
+    model "block_1.off";
+    model "sticker_1.off";
 }
 
 geometry block_12a {
-    model "block_12a.stl";
-    model "sticker_12a.stl";
-    model "sticker_21.stl";
+    model "block_12a.off";
+    model "sticker_12a.off";
+    model "sticker_21.off";
 }
 
 geometry block_12b {
-    model "block_12b.stl";
-    model "sticker_12b.stl";
+    model "block_12b.off";
+    model "sticker_12b.off";
 }
 
 geometry block_123 {
-    model "block_123.stl";
-    model "sticker_123.stl";
+    model "block_123.off";
+    model "sticker_123.off";
 }
 
 geometry block_22 {
-    model "block_22.stl";
+    model "block_22.off";
 }
 
 geometry block_222 {
-    model "block_222.stl";
-    model "sticker_222.stl";
+    model "block_222.off";
+    model "sticker_222.off";
     rotate (-90, -90, 0)
-        model "sticker_222.stl";
+        model "sticker_222.off";
     rotate (90, 0, 90)
-        model "sticker_222.stl";
+        model "sticker_222.off";
 }
 
 auto (x, y) {
@@ -72,22 +72,22 @@ auto (x, y) {
     
     binding U {
         invoke U;
-        click "selector_1_cw.stl";
+        click "selector_1_cw.off";
     }
     
     binding U' {
         invoke U';
-        click "selector_1_ccw.stl";
+        click "selector_1_ccw.off";
     }
     
     binding Um {
         invoke Um;
-        click "selector_2_cw.stl";
+        click "selector_2_cw.off";
     }
     
     binding Um' {
         invoke Um';
-        click "selector_2_ccw.stl";
+        click "selector_2_ccw.off";
     }
 }
 
@@ -95,5 +95,5 @@ operation dummy;
 
 binding dummy {
     invoke dummy;
-    click "selector_0.stl";
+    click "selector_0.off";
 }

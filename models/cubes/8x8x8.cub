@@ -13,30 +13,30 @@ symmetry y {
 }
 
 geometry center {
-    model "block_8.stl";
+    model "block_8.off";
     translate(0, 0, 5)
-        model "sticker_8.stl";
+        model "sticker_8.off";
 }
 
 geometry edge {
-    model "block_8.stl";
+    model "block_8.off";
     translate(0, 0, 5)
-        model "sticker_8.stl";
+        model "sticker_8.off";
     translate(0, 5, 0)
         rotate(-90, 0, 0)
-            model "sticker_8.stl";
+            model "sticker_8.off";
 }
 
 geometry corner {
-    model "block_8.stl";
+    model "block_8.off";
     translate(0, 0, 5)
-        model "sticker_8.stl";
+        model "sticker_8.off";
     translate(0, 5, 0)
         rotate(-90, 0, 0)
-            model "sticker_8.stl";
+            model "sticker_8.off";
     translate(5, 0, 0)
         rotate(0, 90, 0)
-            model "sticker_8.stl";
+            model "sticker_8.off";
 }
 
 auto (x, y) {
@@ -109,49 +109,49 @@ auto (x, y) {
     binding U {
         invoke U;
         translate(0, 0, 35)
-            click "selector_8_1_cw.stl";
+            click "selector_8_1_cw.off";
     }
 
     binding U' {
         invoke U';
         translate(0, 0, 35)
-            click "selector_8_1_ccw.stl";
+            click "selector_8_1_ccw.off";
     }
 
     binding U2 {
         invoke U2;
         translate(0, 0, 25)
-            click "selector_8_2_cw.stl";
+            click "selector_8_2_cw.off";
     }
 
     binding U2' {
         invoke U2';
         translate(0, 0, 25)
-            click "selector_8_2_ccw.stl";
+            click "selector_8_2_ccw.off";
     }
 
     binding U3 {
         invoke U3;
         translate(0, 0, 15)
-            click "selector_8_2_cw.stl";
+            click "selector_8_2_cw.off";
     }
 
     binding U3' {
         invoke U3';
         translate(0, 0, 15)
-            click "selector_8_2_ccw.stl";
+            click "selector_8_2_ccw.off";
     }
 
     binding U4 {
         invoke U4;
         translate(0, 0, 5)
-            click "selector_8_2_cw.stl";
+            click "selector_8_2_cw.off";
     }
 
     binding U4' {
         invoke U4';
         translate(0, 0, 5)
-            click "selector_8_2_ccw.stl";
+            click "selector_8_2_ccw.off";
     }
 }
 
@@ -159,5 +159,5 @@ operation dummy;
 
 binding dummy {
     invoke dummy;
-    click "selector_8_0.stl";
+    click "selector_8_0.off";
 }

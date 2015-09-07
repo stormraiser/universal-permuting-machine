@@ -14,17 +14,17 @@ symmetry y {
 }
 
 geometry center {
-    model "center_block.stl";
-    model "center_sticker.stl";
+    model "center_block.off";
+    model "center_sticker.off";
 }
 
 geometry corner {
-    model "corner_block.stl";
-    model "corner_sticker.stl";
+    model "corner_block.off";
+    model "corner_sticker.off";
     rotate(-90, -90, 0)
-        model "corner_sticker.stl";
+        model "corner_sticker.off";
     rotate(90, 0, 90)
-        model "corner_sticker.stl";
+        model "corner_sticker.off";
 }
 
 
@@ -43,11 +43,11 @@ auto (x, y) {
     
     binding H {
         invoke H;
-        click "selector_cw.stl";
+        click "selector_cw.off";
     }
     
     binding H' {
         invoke H';
-        click "selector_ccw.stl";
+        click "selector_ccw.off";
     }
 }

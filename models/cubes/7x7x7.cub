@@ -13,30 +13,30 @@ symmetry y {
 }
 
 geometry center {
-    model "block_7.stl";
+    model "block_7.off";
     translate(0, 0, 5.5)
-        model "sticker_7.stl";
+        model "sticker_7.off";
 }
 
 geometry edge {
-    model "block_7.stl";
+    model "block_7.off";
     translate(0, 0, 5.5)
-        model "sticker_7.stl";
+        model "sticker_7.off";
     translate(0, 5.5, 0)
         rotate(-90, 0, 0)
-            model "sticker_7.stl";
+            model "sticker_7.off";
 }
 
 geometry corner {
-    model "block_7.stl";
+    model "block_7.off";
     translate(0, 0, 5.5)
-        model "sticker_7.stl";
+        model "sticker_7.off";
     translate(0, 5.5, 0)
         rotate(-90, 0, 0)
-            model "sticker_7.stl";
+            model "sticker_7.off";
     translate(5.5, 0, 0)
         rotate(0, 90, 0)
-            model "sticker_7.stl";
+            model "sticker_7.off";
 }
 
 auto (x, y) {
@@ -105,42 +105,42 @@ auto (x, y) {
     binding U {
         invoke U;
         translate(0, 0, 33)
-            click "selector_7_1_cw.stl";
+            click "selector_7_1_cw.off";
     }
 
     binding U' {
         invoke U';
         translate(0, 0, 33)
-            click "selector_7_1_ccw.stl";
+            click "selector_7_1_ccw.off";
     }
 
     binding U2 {
         invoke U2;
         translate(0, 0, 22)
-            click "selector_7_2_cw.stl";
+            click "selector_7_2_cw.off";
     }
 
     binding U2' {
         invoke U2';
         translate(0, 0, 22)
-            click "selector_7_2_ccw.stl";
+            click "selector_7_2_ccw.off";
     }
 
     binding U3 {
         invoke U3;
         translate(0, 0, 11)
-            click "selector_7_2_cw.stl";
+            click "selector_7_2_cw.off";
     }
 
     binding U3' {
         invoke U3';
         translate(0, 0, 11)
-            click "selector_7_2_ccw.stl";
+            click "selector_7_2_ccw.off";
     }
     
     binding Um {
         invoke Um;
-        click "selector_7_2_cw.stl";
+        click "selector_7_2_cw.off";
     }
 }
 
@@ -148,5 +148,5 @@ operation dummy;
 
 binding dummy {
     invoke dummy;
-    click "selector_7_0.stl";
+    click "selector_7_0.off";
 }

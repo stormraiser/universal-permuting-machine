@@ -13,36 +13,36 @@ symmetry y {
 }
 
 geometry center {
-    model "center_block.stl";
+    model "center_block.off";
     translate (0, 0, 37.5)
-        model "medium_sticker.stl";
+        model "medium_sticker.off";
 }
 
 geometry edge {
-    model "edge_block.stl";
+    model "edge_block.off";
     translate (0, 30.410533, 37.5)
-        model "small_sticker.stl";
+        model "small_sticker.off";
     translate (0, 37.5, 30.410533)
         rotate (-90, 0, 0)
-            model "small_sticker.stl";
+            model "small_sticker.off";
 }
 
 geometry intermediate {
-    model "intermediate_block.stl";
+    model "intermediate_block.off";
     translate (0, 16.231602, 37.5)
-        model "small_sticker.stl";
+        model "small_sticker.off";
 }
 
 geometry corner {
-    model "corner_block.stl";
+    model "corner_block.off";
     translate (23.321068, 23.321068, 37.5)
-        model "large_sticker.stl";
+        model "large_sticker.off";
     translate (23.321068, 37.5, 23.321068)
         rotate (-90, 0, 0)
-            model "large_sticker.stl";
+            model "large_sticker.off";
     translate (37.5, 23.321068, 23.321068)
         rotate (0, 90, 0)
-            model "large_sticker.stl";
+            model "large_sticker.off";
 }
 
 auto (x, y) {
@@ -71,17 +71,17 @@ auto (x, y) {
     
     binding U {
         invoke U;
-        click "face_pick_cw.stl";
+        click "face_pick_cw.off";
     }
     
     binding U' {
         invoke U';
-        click "face_pick_ccw.stl";
+        click "face_pick_ccw.off";
     }
     
     binding Um {
         invoke Um;
-        click "middle_pick.stl";
+        click "middle_pick.off";
     }
 }
 
@@ -89,5 +89,5 @@ operation dummy;
 
 binding dummy {
     invoke dummy;
-    click "selector_0.stl";
+    click "selector_0.off";
 }

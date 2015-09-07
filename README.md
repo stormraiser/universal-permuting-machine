@@ -38,12 +38,18 @@ Again you need Qt5 and Eigen. You may also need to change the gcc executable nam
 `make`
 
 ## How To Use
+
 ### The UI
 The UI is still very simple. The display area to the left is where the simulated puzzle is shown and where you interact with it. Left click to operate on the puzzle, right click and drag to rotate, scroll mouse wheel to zoom. The drop box in the lower-left corner is used to switch between display modes. All other functions are accessed through the control panel to the right of the window.
+
 "Load and play" loads a cube description file and runs the simulation in the display area to the left.
+
 "New display" creates an additional display window. These windows are controlled independently. They could be set to syncronize rotation with the display area in the main window.
+
 "Load" loads a cube description file and displays it in a code tab where you may edit the file. "New" cheates a new empty code tab, and "Save" saves the file in the current code tab. Cube description files loaded this way will not be parsed and simulated automaticly, you need to click "Play" to run the simulation.
+
 "Scramble" scrambles the cube, and "Reset" resets it.
+
 Below the set of buttons is the terminal. Most informations will be displayed here. You may type in commands to control the puzzle.
 
 ### The Language
@@ -52,6 +58,7 @@ As mentioned above, you can build your own puzzles. For this purpose we have des
 The language design has not been fully implemented yet, but it sould suffice to write a simple puzzle like the Rubik's Cube. The specification of the lange would not be long, but to be able to use it you really have to understand some ideas behind the design, and that might need some tens of pages of documentation with carefully designed examples. I'm not planning to write such a documentation before a full release of this software since I would probably be the only one who will actually write these cube specification files. If you want to see how it works now, just open one `.cub` file and try to read it. If your programming skill enables you to build these code, the syntax should seem straight forward. And if you play Rubik's Cube, you could guess some of the semantics.
 
 ## Version Histroy
+
 ###alpha 0.2 - 2015.9.6
 *	Code editing capabilities, with syntax highlighting
 *	Multiple display windows
