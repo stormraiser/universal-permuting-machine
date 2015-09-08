@@ -7,12 +7,14 @@ use <small_sticker.scad>
 use <medium_sticker.scad>
 use <large_sticker.scad>
 
-center_block();
-corner_block();
-edge_block();
-intermediate_block();
+color([0.4, 0.4, 0.4]) {
+    center_block();
+    corner_block();
+    edge_block();
+    intermediate_block();
+}
 
-color([1, 0, 0]) {
+color([0.9, 0.9, 0.9]) {
     translate([0, 0, total_size / 2])
         medium_sticker();
     translate([0, base_size * (sqrt(2) + 1) / 2 + round_radius * 0.5, total_size / 2])

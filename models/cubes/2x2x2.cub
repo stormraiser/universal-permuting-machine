@@ -13,15 +13,15 @@ symmetry y {
 }
 
 geometry corner {
-    model "block_2.stl";
+    model "block_2.off";
     translate(0, 0, 12.5)
-        model "sticker_2.stl";
+        model "sticker_2.off";
     translate(0, 12.5, 0)
         rotate(-90, 0, 0)
-            model "sticker_2.stl";
+            model "sticker_2.off";
     translate(12.5, 0, 0)
         rotate(0, 90, 0)
-            model "sticker_2.stl";
+            model "sticker_2.off";
 }
 
 auto (x, y) {
@@ -39,13 +39,13 @@ auto (x, y) {
     binding U {
         invoke U;
         translate(0, 0, 12.5)
-            click "selector_2_1_cw.stl";
+            click "selector_2_1_cw.off";
     }
 
     binding U' {
         invoke U';
         translate(0, 0, 12.5)
-            click "selector_2_1_ccw.stl";
+            click "selector_2_1_ccw.off";
     }
 }
 
@@ -53,5 +53,5 @@ operation dummy;
 
 binding dummy {
     invoke dummy;
-    click "selector_2_0.stl";
+    click "selector_2_0.off";
 }

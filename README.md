@@ -37,6 +37,8 @@ Again you need Qt5 and Eigen. You may also need to change the gcc executable nam
 
 `make`
 
+To try the example puzzles, you will also need to build the 3D models. Install OpenSCAD, enter model directory and execute `make`.
+
 ## How To Use
 
 ### The UI

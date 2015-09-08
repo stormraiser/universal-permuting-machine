@@ -1,11 +1,11 @@
-round_radius = 0.6;
-sticker_margin = 1.2;
-sticker_round_radius = 0.4;
+round_radius = 0.75;
+sticker_margin = 1.75;
+sticker_round_radius = 0.5;
 cube_size = 60;
 disk_height = 12.5;
 disk_radius = cube_size / 2;
-base_size = cube_size / 2 / sqrt(10 + 7 * sqrt(2));
-cut1_dis = base_size * (1 + sqrt(2) / 2);
+base_size = (cube_size / 2 - round_radius) / sqrt(10 + 7 * sqrt(2));
+cut1_dis = base_size * (1 + sqrt(2) / 2) + round_radius;
 cut2_dis = cube_size / 2;
 inf = cube_size * 10;
 

@@ -15,24 +15,24 @@ symmetry y {
 }
 
 geometry center {
-    model "center_block.stl";
-    model "center_sticker.stl";
+    model "center_block.off";
+    model "center_sticker.off";
 }
 
 geometry edge {
-    model "edge_block.stl";
-    model "edge_sticker.stl";
+    model "edge_block.off";
+    model "edge_sticker.off";
     rotate(0, 0, 180)
-        model "edge_sticker.stl";
+        model "edge_sticker.off";
 }
 
 geometry corner {
-    model "corner_block.stl";
-    model "corner_sticker.stl";
+    model "corner_block.off";
+    model "corner_sticker.off";
     axisangle(0, 1, 2.618034, -120)
-        model "corner_sticker.stl";
+        model "corner_sticker.off";
     axisangle(0, 1, 2.618034, 120)
-        model "corner_sticker.stl";
+        model "corner_sticker.off";
 }
 
 auto (x, y) {
@@ -50,17 +50,17 @@ auto (x, y) {
     
     binding U {
         invoke U;
-        click "selector_cw.stl";
+        click "selector_cw.off";
     }
     
     binding U' {
         invoke U';
-        click "selector_ccw.stl";
+        click "selector_ccw.off";
     }
 }
 
 operation dummy;
 binding dummy {
     invoke dummy;
-    click "selector_0.stl";
+    click "selector_0.off";
 }

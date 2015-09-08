@@ -11,7 +11,7 @@ use <sticker_123.scad>
 use <sticker_222.scad>
 use <sticker_21.scad>
 
-color([0.5, 0.5, 0.5]) {
+color([0.4, 0.4, 0.4]) {
     block_1();
     for (deg = [-45 : 45 : 0])
         rotate([0, 0, deg])
@@ -25,6 +25,7 @@ color([0.5, 0.5, 0.5]) {
     block_22();
     block_222();
 }
+
 color([0.9, 0.9, 0.9]) {
     sticker_1();
     for (deg = [-45 : 45 : 0])

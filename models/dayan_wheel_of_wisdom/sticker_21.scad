@@ -7,9 +7,8 @@ module _tube() {
     }
 }
 
-theta = 22.5;
-alpha = 90 - theta - acos((disk_radius * sin(theta) + round_radius) / (disk_radius - round_radius));
-cut_deg = alpha + (sticker_margin - round_radius) / disk_radius / 3.141592654 * 180;
+theta = acos((cut1_dis + round_radius) / (disk_radius - round_radius)) - 45 - (sticker_margin - round_radius) / disk_radius / 3.141592654 * 180;
+
 
 module sticker_21() {
     intersection() {
@@ -20,7 +19,7 @@ module sticker_21() {
                         cylinder(r = inf, h = disk_height - sticker_margin * 2, center = true, $fn = 96);
                     _tube();
                 }
-                for (deg = [112.5 - cut_deg, -112.5 + cut_deg])
+                for (deg = [90 + theta, -90 - theta])
                     rotate([-90, 0, deg])
                         translate([-inf, -inf, 0])
                             cube([inf * 2, inf * 2, inf]);

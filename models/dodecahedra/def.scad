@@ -5,7 +5,7 @@ sticker_margin = 2.5;
 sticker_round_radius = 0.75;
 
 phi = (sqrt(5) + 1) / 2;
-outer_radius = 80;
+outer_radius = 50;
 edge_length = outer_radius / sqrt(phi * phi * phi * phi + 1) * 2;
 inner_radius = sqrt(outer_radius * outer_radius - (edge_length / 2 / cos(54)) * (edge_length / 2 / cos(54)));
 cut1_length = edge_length / (1 / (phi * phi) + 2) * 3;
