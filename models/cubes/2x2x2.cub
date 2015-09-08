@@ -1,0 +1,57 @@
+tag U = (1, 1, 1), D = (1, 0.8, 0), R = (0, 0, 0.8);
+tag L = (0, 0.5, 0), F = (0.8, 0, 0), B = (0.8, 0.3, 0);
+tag body = (0.1, 0.1, 0.1);
+
+symmetry x {
+    cycle (U, R, D, L);
+    axisangle (1, 0, 0, -90);
+}
+
+symmetry y {
+    cycle (F, U, B, D);
+    axisangle (0, 1, 0, -90);
+}
+
+geometry corner {
+    model "block_2.stl";
+    translate(0, 0, 12.5)
+        model "sticker_2.stl";
+    translate(0, 12.5, 0)
+        rotate(-90, 0, 0)
+            model "sticker_2.stl";
+    translate(12.5, 0, 0)
+        rotate(0, 90, 0)
+            model "sticker_2.stl";
+}
+
+auto (x, y) {
+    translate(12.5, 12.5, 12.5)
+        block URF = corner(body, U, R, F);
+    block alias (URF, RFU);
+    position URF;
+    
+    operation U {
+        axisangle(0, 0, 1, -90)
+            shift (URF, UFL), (RFU, FLU), (FUR, LUF);
+    }
+    operation U' inverse U;
+    
+    binding U {
+        invoke U;
+        translate(0, 0, 12.5)
+            click "selector_2_1_cw.stl";
+    }
+
+    binding U' {
+        invoke U';
+        translate(0, 0, 12.5)
+            click "selector_2_1_ccw.stl";
+    }
+}
+
+operation dummy;
+
+binding dummy {
+    invoke dummy;
+    click "selector_2_0.stl";
+}
