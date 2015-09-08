@@ -1196,19 +1196,20 @@ void Translator::operationPass(CubeSem *node, TranslatorOperation *operation) {
         }
         break;
     case CubeSem::semForbidStmt:
-        for (CubeSem *p : node->childList) {
-            for (string q : p->stringList) {
-                auto r = positions.find(q);
-                if (r == positions.end()) {
-                    errorList.push_back(new GenericError(p->location, "Unknown position"));
-                }
-                else {
-                    if (operation->positionPermutation[r->second->aliasedId] >= 0) {
-                        errorList.push_back(new GenericError(p->location, "Conflicting position permutation"));
+        {
+            vector<int> tmp;
+            for (CubeSem *p : node->childList) {
+                tmp.clear();
+                for (string q : p->stringList) {
+                    auto r = positions.find(q);
+                    if (r == positions.end()) {
+                        errorList.push_back(new GenericError(p->location, "Unknown position"));
                     }
-                    operation->positionPermutation[r->second->aliasedId] = -2;
-                    operation->inversePermutation[r->second->aliasedId] = -2;
+                    else {
+                        tmp.push_back(r->second->aliasedId);
+                    }
                 }
+                operation->forbiddenList.push_back(tmp);
             }
         }
     default:
@@ -1251,16 +1252,6 @@ void Translator::processOperationStmt() {
     }
     operationStmtList.clear();
 
-    for (auto p : operations) {
-        for (int i = 0; i < aliasedPositionList.size(); i++) {
-            if ((p.second->positionPermutation[i] >= 0) && (p.second->inversePermutation[i] < 0)) {
-                p.second->inversePermutation[i] = -2;
-            }
-            else if ((p.second->inversePermutation[i] >= 0) && (p.second->positionPermutation[i] < 0)) {
-                p.second->positionPermutation[i] = -2;
-            }
-        }
-    }
     for (CubeSem *p : inverseStmtList) {
         auto q = operations.find(p->string1);
         auto r = operations.find(p->string2);
@@ -1272,7 +1263,9 @@ void Translator::processOperationStmt() {
             operation->name = p->string1;
             operation->inverse = p->string2;
             operation->positionPermutation = r->second->inversePermutation;
+            operation->inversePermutation = r->second->positionPermutation;
             operation->transformationId.assign(aliasedPositionList.size(), -1);
+            operation->forbiddenList = r->second->forbiddenList;
             for (int i = 0; i < aliasedPositionList.size(); i++) {
                 if (operation->positionPermutation[i] >= 0) {
                     operation->transformationId[i] = r->second->transformationId[operation->positionPermutation[i]];
@@ -1295,10 +1288,19 @@ void Translator::processOperationStmt() {
             errorList.push_back(new GenericError(p->location, "Conflicting inverse statements"));
         }
     }
+
+    vector<int> tmp;
+    tmp.resize(1);
     for (auto p : operations) {
         for (int i = 0; i < aliasedPositionList.size(); i++) {
-            if (p.second->positionPermutation[i] == -1) {
-                p.second->positionPermutation[i] = i;
+            if (p.second->positionPermutation[i] < 0) {
+                if (p.second->inversePermutation[i] >= 0) {
+                    tmp[0] = i;
+                    p.second->forbiddenList.push_back(tmp);
+                }
+                else {
+                    p.second->positionPermutation[i] = i;
+                }
             }
         }
         p.second->activeTransformationList.resize(p.second->transformationList.size());
@@ -1547,6 +1549,7 @@ Cube *Translator::getCube() {
         cubeBlock->isSelected = false;
         cube->blocks.push_back(cubeBlock);
     }
+    cube->positionCount = aliasedPositionList.size();
     for (auto p : meshObjects) {
         cube->meshObjects.push_back(p.second);
     }

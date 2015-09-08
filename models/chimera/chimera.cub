@@ -1,0 +1,252 @@
+tag U = (1, 1, 1), D = (1, 0.8, 0), R = (0, 0, 0.8);
+tag L = (0, 0.5, 0), F = (0.8, 0, 0), B = (0.8, 0.3, 0);
+tag body = (0.1, 0.1, 0.1);
+
+symmetry x {
+    cycle (U, R, D, L);
+    axisangle (1, 0, 0, -90);
+}
+
+symmetry y {
+    cycle (F, U, B, D);
+    axisangle (0, 1, 0, -90);
+}
+
+symmetry z {
+    cycle (F, B), (R, L);
+    axisangle (0, 0, 1, 180);
+}
+
+symmetry d {
+    cycle (U, R, F), (D, L, B);
+    axisangle (1, 1, 1, -120);
+}
+
+geometry center_4 {
+    model "block_4.off";
+    translate(0, 0, 9)
+        model "sticker_4.off";
+}
+
+geometry edge_4 {
+    model "block_4.off";
+    translate(0, 0, 9)
+        model "sticker_4.off";
+    translate(0, 9, 0)
+        rotate(-90, 0, 0)
+            model "sticker_4.off";
+}
+
+geometry corner_4 {
+    model "block_4.off";
+    translate(0, 0, 9)
+        model "sticker_4.off";
+    translate(0, 9, 0)
+        rotate(-90, 0, 0)
+            model "sticker_4.off";
+    translate(9, 0, 0)
+        rotate(0, 90, 0)
+            model "sticker_4.off";
+}
+
+geometry center_6 {
+    model "block_6.off";
+    translate(0, 0, 6)
+        model "sticker_6.off";
+}
+
+geometry edge_6 {
+    model "block_6.off";
+    translate(0, 0, 6)
+        model "sticker_6.off";
+    translate(0, 6, 0)
+        rotate(-90, 0, 0)
+            model "sticker_6.off";
+}
+
+geometry corner_6 {
+    model "block_6.off";
+    translate(0, 0, 6)
+        model "sticker_6.off";
+    translate(0, 6, 0)
+        rotate(-90, 0, 0)
+            model "sticker_6.off";
+    translate(6, 0, 0)
+        rotate(0, 90, 0)
+            model "sticker_6.off";
+}
+
+auto (z, d) {
+    translate(9, 9, 27)
+        block UR2F2_4 = center_4(body, U);
+    translate(9, 27, 27)
+        block URF2_4 = edge_4(body, U, R);
+    translate(27, 27, 27)
+        block URF_4 = corner_4(body, U, R, F);
+    block alias (URF_4, RFU_4);
+    
+    rotate(0, 0, -90) {
+        translate(6, 6, 30)
+            block UF3L3_6 = center_6(body, U);
+        translate(6, 18, 30)
+            block UF2L3_6 = center_6(body, U);
+        translate(6, 30, 30)
+            block UFL3_6 = edge_6(body, U, F);
+        translate(18, 6, 30)
+            block UF3L2_6 = center_6(body, U);
+        translate(18, 18, 30)
+            block UF2L2_6 = center_6(body, U);
+        translate(18, 30, 30)
+            block UFL2_6 = edge_6(body, U, F);
+        translate(30, 30, 30)
+            block UFL_6 = corner_6(body, U, F, L);
+    }
+    block alias (UFL_6, FLU_6);
+}
+
+auto (x, y) {
+    position UR2F2_4, URF2_4, UR2F_4, URF_4;
+    position UR3F3_6, UR2F3_6, URF3_6, UR3F2_6, UR2F2_6, URF2_6, UR3F_6, UR2F_6, URF_6;
+    
+    operation U_4 {
+        axisangle(0, 0, 1, -90) {
+            shift (UR2F2_4, UF2L2_4), (URF2_4, UFL2_4), (RF2U_4, FL2U_4), (UR2F_4, UF2L_4), (FUR2_4, LUF2_4);
+            shift (URF_4, UFL_4), (RFU_4, FLU_4), (FUR_4, LUF_4);
+        }
+        forbid URF_6, RFU_6, FUR_6;
+    }
+    operation U_4' inverse U_4;
+    
+    operation U2_4 {
+        axisangle(0, 0, 1, -90)
+            shift (RF2U2_4, FL2U2_4), (RFU2_4, FLU2_4), (FU2R_4, LU2F_4), (FU2R2_4, LU2F2_4);
+        forbid URF_6, RFU_6, FUR_6;
+    }
+    operation U2_4' inverse U2_4;
+    
+    binding U_4 {
+        invoke U_4;
+        translate(0, 0, 27)
+            click "selector_4_1_cw.off";
+    }
+
+    binding U_4' {
+        invoke U_4';
+        translate(0, 0, 27)
+            click "selector_4_1_ccw.off";
+    }
+
+    binding U2_4 {
+        invoke U2_4;
+        translate(0, 0, 9)
+            click "selector_4_2_cw.off";
+    }
+
+    binding U2_4' {
+        invoke U2_4';
+        translate(0, 0, 9)
+            click "selector_4_2_ccw.off";
+    }
+    
+    operation U_6 {
+        axisangle(0, 0, 1, -90) {
+            shift (UR3F3_6, UF3L3_6), (UR2F3_6, UF2L3_6), (URF3_6, UFL3_6);
+            shift (UR3F2_6, UF3L2_6), (UR2F2_6, UF2L2_6), (URF2_6, UFL2_6);
+            shift (UR3F_6, UF3L_6), (UR2F_6, UF2L_6), (URF_6, UFL_6);
+            shift (RF3U_6, FL3U_6), (RF2U_6, FL2U_6), (RFU_6, FLU_6);
+            shift (FUR_6, LUF_6), (FUR2_6, LUF2_6), (FUR3_6, LUF3_6);
+        }
+        forbid URF_4, RFU_4, FUR_4;
+    }
+    operation U_6' inverse U_6;
+    
+    operation U2_6 {
+        axisangle(0, 0, 1, -90) {
+            shift (RF3U2_6, FL3U2_6), (RF2U2_6, FL2U2_6), (RFU2_6, FLU2_6);
+            shift (FU2R_6, LU2F_6), (FU2R2_6, LU2F2_6), (FU2R3_6, LU2F3_6);
+        }
+        forbid URF_4, RFU_4, FUR_4;
+    }
+    operation U2_6' inverse U2_6;
+    
+    operation U3_6 {
+        axisangle(0, 0, 1, -90) {
+            shift (RF3U3_6, FL3U3_6), (RF2U3_6, FL2U3_6), (RFU3_6, FLU3_6);
+            shift (FU3R_6, LU3F_6), (FU3R2_6, LU3F2_6), (FU3R3_6, LU3F3_6);
+        }
+        forbid URF_4, RFU_4, FUR_4;
+    }
+    operation U3_6' inverse U3_6;
+    
+    binding U_6 {
+        invoke U_6;
+        translate(0, 0, 30)
+            click "selector_6_1_cw.off";
+    }
+
+    binding U_6' {
+        invoke U_6';
+        translate(0, 0, 30)
+            click "selector_6_1_ccw.off";
+    }
+
+    binding U2_6 {
+        invoke U2_6;
+        translate(0, 0, 18)
+            click "selector_6_2_cw.off";
+    }
+
+    binding U2_6' {
+        invoke U2_6';
+        translate(0, 0, 18)
+            click "selector_6_2_ccw.off";
+    }
+
+    binding U3_6 {
+        invoke U3_6;
+        translate(0, 0, 6)
+            click "selector_6_2_cw.off";
+    }
+
+    binding U3_6' {
+        invoke U3_6';
+        translate(0, 0, 6)
+            click "selector_6_2_ccw.off";
+    }
+    
+    operation U {
+        axisangle(0, 0, 1, -90) {
+            shift (UR2F2_4, UF2L2_4), (URF2_4, UFL2_4), (RF2U_4, FL2U_4), (UR2F_4, UF2L_4), (FUR2_4, LUF2_4);
+            shift (URF_4, UFL_4), (RFU_4, FLU_4), (FUR_4, LUF_4);
+            shift (RF2U2_4, FL2U2_4), (RFU2_4, FLU2_4), (FU2R_4, LU2F_4), (FU2R2_4, LU2F2_4);
+            shift (UR3F3_6, UF3L3_6), (UR2F3_6, UF2L3_6), (URF3_6, UFL3_6);
+            shift (UR3F2_6, UF3L2_6), (UR2F2_6, UF2L2_6), (URF2_6, UFL2_6);
+            shift (UR3F_6, UF3L_6), (UR2F_6, UF2L_6), (URF_6, UFL_6);
+            shift (RF3U_6, FL3U_6), (RF2U_6, FL2U_6), (RFU_6, FLU_6);
+            shift (FUR_6, LUF_6), (FUR2_6, LUF2_6), (FUR3_6, LUF3_6);
+            shift (RF3U2_6, FL3U2_6), (RF2U2_6, FL2U2_6), (RFU2_6, FLU2_6);
+            shift (FU2R_6, LU2F_6), (FU2R2_6, LU2F2_6), (FU2R3_6, LU2F3_6);
+            shift (RF3U3_6, FL3U3_6), (RF2U3_6, FL2U3_6), (RFU3_6, FLU3_6);
+            shift (FU3R_6, LU3F_6), (FU3R2_6, LU3F2_6), (FU3R3_6, LU3F3_6);
+        }
+    }
+    operation U' inverse U;
+    
+    binding U {
+        invoke U;
+        translate(0, 0, 18)
+            click "selector_2_1_cw.off";
+    }
+    
+    binding U' {
+        invoke U';
+        translate(0, 0, 18)
+            click "selector_2_1_ccw.off";
+    }
+}
+
+operation dummy;
+binding dummy {
+    invoke dummy;
+    click "selector_0.off";
+}

@@ -16,11 +16,11 @@ struct Cube {
     map<string, TranslatorBinding*> bindingMap;
     vector< vector<int> > bandages;
 
+    int positionCount;
     int activeBinding, uintBits;
     GLint redBits, greenBits, blueBits;
     int animationStage, animationBinding;
 
-    bool check(const vector<int> &positionPermutation);
     void partialOperate(int operationId, double t);
     void operate(int operationId);
     void operate();
