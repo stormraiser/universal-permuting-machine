@@ -1196,6 +1196,7 @@ void Translator::operationPass(CubeSem *node, TranslatorOperation *operation) {
         }
         break;
     case CubeSem::semForbidStmt:
+    case CubeSem::semRequireStmt:
         {
             vector<int> tmp;
             for (CubeSem *p : node->childList) {
@@ -1209,7 +1210,12 @@ void Translator::operationPass(CubeSem *node, TranslatorOperation *operation) {
                         tmp.push_back(r->second->aliasedId);
                     }
                 }
-                operation->forbiddenList.push_back(tmp);
+                if (node->type == CubeSem::semForbidStmt) {
+                    operation->forbiddenList.push_back(tmp);
+                }
+                else {
+                    operation->requiredList.push_back(tmp);
+                }
             }
         }
     default:

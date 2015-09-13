@@ -50,7 +50,7 @@ identifier_list     :   identifier_list ',' IDENTIFIER
                         }
                     ;
 
-tuple               :   '(' identifier_list ')'
+identifier_tuple    :   '(' identifier_list ')'
                         {
                             $$ = $2;
                             $$->location = @$;
@@ -63,13 +63,13 @@ tuple               :   '(' identifier_list ')'
                         }
                     ;
 
-tuple_list          :   tuple_list ',' tuple
+tuple_list          :   tuple_list ',' identifier_tuple
                         {
                             $$ = $1;
                             $$->location = @$;
                             $$->childList.push_back($3);
                         }
-                    |   tuple
+                    |   identifier_tuple
                         {
                             $$ = new CubeSem(@$, CubeSem::semTupleList);
                             $$->childList.push_back($1);
@@ -96,6 +96,25 @@ number_tuple        :   '(' number_list ')'
                             $$->type = CubeSem::semNumberTuple;
                         }
                     ;
+
+block_position_set  :   identifier_tuple ':' identifier_tuple
+                        {
+                            $$ = new CubeSem(@$, CubeSem::semBlockPositionSet);
+                            $$->childList.push_back($1);
+                            $$->childList.push_back($2);
+                        }
+                    ;
+
+block_position_item :   IDENTIFIER ':' IDENTIFIER
+                        {
+                            $$ = new CubeSem(@$, CubeSem::semBlockPositionItem);
+                            $$->string1 = $1->string1;
+                            $$->string2 = $3->string1;
+                        }
+                    ;
+
+position_item       :   IDENTIFIER
+                    |   block_position
 
 tuple_list_keyword  :   BLOCK ALIAS
                         {
@@ -267,7 +286,7 @@ tag_stmt            :   TAG tag_list ';'
                         }
                     ;
 
-block_item          :   IDENTIFIER '=' IDENTIFIER tuple
+block_item          :   IDENTIFIER '=' IDENTIFIER identifier_tuple
                         {
                             $$ = new CubeSem(@$, CubeSem::semBlockItem);
                             $$->string1 = $1->string1;
@@ -405,14 +424,14 @@ metadata_stmt       :   METADATA '{' metadata_list '}'
                         }
                     ;
 
-bandage_item        :   tuple '=' IDENTIFIER tuple
+bandage_item        :   identifier_tuple '=' IDENTIFIER identifier_tuple
                         {
                             $$ = new CubeSem(@$, CubeSem::semBandageItem);
                             $$->childList.push_back($1);
                             $$->childList.push_back($4);
                             $$->string1 = $3->string1;
                         }
-                    |   tuple
+                    |   identifier_tuple
                     ;
 
 bandage_list        :   bandage_list ',' bandage_item

@@ -46,6 +46,7 @@ STRING_LITERAL      \"([^\"\\\n]|(\\['\"?\\abfnrtv])|(\\([0123456]{1,3}))|(\\x[[
                     }
 
 ","                 { UPDATE_LOCATION return ','; }
+":"                 { UPDATE_LOCATION return ':'; }
 ";"                 { UPDATE_LOCATION return ';'; }
 "{"                 { UPDATE_LOCATION return '{'; }
 "}"                 { UPDATE_LOCATION return '}'; }

@@ -80,7 +80,7 @@ struct TranslatorOperation {
     vector< Eigen::Affine3d, Eigen::aligned_allocator<Eigen::Affine3d> > activeTransformationList;
     vector<int> positionPermutation, inversePermutation;
     vector<int> transformationId;
-    vector< vector<int> > forbiddenList;
+    vector< vector<int> > forbiddenList, requiredList;
 
     string toString();
     void generateTransformation(double t = 1);

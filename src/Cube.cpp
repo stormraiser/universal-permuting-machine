@@ -16,10 +16,10 @@ void Cube::checkBindingValidity() {
             bool f = true;
             for (vector<int> vec : binding->invokeList[i]) {
                 for (int j : vec) {
-                    // check for forbidden positions
                     currentBlocks.assign(positionCount, -1);
                     for (int k = 0; k < blocks.size(); k++)
                         currentBlocks[currentPositions[k]] = k;
+                    // check for forbidden positions
                     for (vector<int> vec2 : operations[j]->forbiddenList) {
                         bool ft = true;
                         for (int k : vec2) {
@@ -29,6 +29,23 @@ void Cube::checkBindingValidity() {
                             }
                         }
                         if (ft) {
+                            f = false;
+                            break;
+                        }
+                    }
+                    if (!f) {
+                        break;
+                    }
+                    // check for required positions
+                    for (vector<int> vec2 : operations[j]->requiredList) {
+                        bool ft = false;
+                        for (int k : vec2) {
+                            if (currentBlocks[k] != -1) {
+                                ft = true;
+                                break;
+                            }
+                        }
+                        if (!ft) {
                             f = false;
                             break;
                         }
